@@ -1,0 +1,166 @@
+{
+  "skill": "proc-agile",
+  "scenarios": [
+    {
+      "id": "prognoza-kanban",
+      "expect": "trigger",
+      "prompt": "Nasz zespół pracuje w Kanbanie, a szef pyta, ile zadań zrobimy do końca kwartału. Jak odpowiedzieć na podstawie danych, a nie estymat? Jakie metryki zbierać? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "monte carlo"
+          ],
+          [
+            "przepustowo",
+            "throughput"
+          ],
+          [
+            "wiek elementu",
+            "work item age",
+            "czas cyklu",
+            "cycle time"
+          ],
+          [
+            "ukrywa ryzyko",
+            "średni\\w*[^.]{0,40}(50 ?%|połow)",
+            "50 ?% szans[^.]{0,40}(średni|ukrywa)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ciecie-historyjek",
+      "expect": "trigger",
+      "prompt": "Mamy historyjkę „Jako klient chcę zamawiać produkty” rozbitą na zadania: baza, API, UI. Jak ją pociąć lepiej, żeby spełniała INVEST? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "pionow",
+            "vertical"
+          ],
+          [
+            "INVEST"
+          ],
+          [
+            "ścieżk",
+            "reguł",
+            "wariant",
+            "scenariusz",
+            "happy path"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "mapa-historyjek-pierwsze-wydanie",
+      "expect": "trigger",
+      "prompt": "Mamy w backlogu 60 historyjek dla nowej aplikacji do rezerwacji sal i nikt nie widzi całości ani tego, co wejdzie do pierwszego wydania. Jak to uporządkować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "mapa historyjek",
+            "story map"
+          ],
+          [
+            "kręgosłup",
+            "szkielet",
+            "aktywnoś\\w*",
+            "krok\\w* użytkownika"
+          ],
+          [
+            "wydani\\w*[^\\n]{0,60}(poziom|plaster|linia|przekr)",
+            "plaster\\w*",
+            "poziom\\w* lini\\w*",
+            "walking skeleton",
+            "chodzący szkielet"
+          ],
+          [
+            "wynik\\w*",
+            "cel\\w*",
+            "efekt\\w*"
+          ]
+        ],
+        "none": [
+          "(posortuj|ułóż) (wszystkie )?historyjki według punktów"
+        ]
+      }
+    },
+    {
+      "id": "duza-historyjka-wzorce",
+      "expect": "trigger",
+      "prompt": "Historyjka „Jako księgowa chcę importować wyciągi bankowe” nie mieści się w sprincie. Jakie są sposoby, żeby ją podzielić bez dzielenia na warstwy? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "krok\\w* (przepływu|procesu)",
+            "etap\\w* procesu",
+            "ścieżk\\w*"
+          ],
+          [
+            "reguł\\w*",
+            "wariant\\w* reguł"
+          ],
+          [
+            "dan\\w*",
+            "format\\w*",
+            "bank\\w*"
+          ],
+          [
+            "spike",
+            "rozpoznani\\w*",
+            "SPIDR",
+            "interfejs\\w*"
+          ]
+        ],
+        "none": [
+          "(osobno|najpierw) (backend|baza)[^\\n]{0,30}(potem|osobno) (frontend|UI)"
+        ]
+      }
+    },
+    {
+      "id": "sygnaly-mieszania-funkcjonalnosci",
+      "expect": "trigger",
+      "prompt": "Po czym na pierwszy rzut oka poznać, że historyjka w backlogu miesza kilka funkcjonalności i trzeba ją podzielić? Mamy np. „Eksport/import produktów” i „BE: endpoint zamówień”. Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "spójnik",
+            "„i”",
+            "ukośnik",
+            "\\blub\\b",
+            "\\boraz\\b"
+          ],
+          [
+            "aktor",
+            "rol\\w*",
+            "kilku użytkownik"
+          ],
+          [
+            "warstw",
+            "backend",
+            "\\bBE\\b",
+            "zadani\\w*, nie historyj"
+          ],
+          [
+            "scenariusz",
+            "kryteri\\w* akceptacji",
+            "When",
+            "Gdy"
+          ]
+        ]
+      },
+      "rubric": [
+        "spójnik albo ukośnik między czasownikami w tytule lub celu (eksport/import) to sygnał kilku akcji",
+        "kilku aktorów w „Jako X lub Y” to sygnał",
+        "tytuł od warstwy (BE:, API:) to zadanie, nie historyjka",
+        "różne akcje główne w scenariuszach kryteriów akceptacji to sygnał"
+      ]
+    },
+    {
+      "id": "wiele-zespolow",
+      "expect": "no-trigger",
+      "prompt": "Mamy 8 zespołów i ponad 100 osób pracujących nad jednym produktem. Czy wdrożyć PI Planning i Agile Release Train i jak zaplanować pracę ponad zespołami? Odpowiedz zwięźle.",
+      "neighbor": "proc-safe"
+    }
+  ]
+}

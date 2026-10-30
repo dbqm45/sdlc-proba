@@ -1,0 +1,9 @@
+{
+  "baseline": 7,
+  "recent": 2,
+  "service": "sdlc-sandbox",
+  "metrics": {
+    "deployments": { "side": "lower" },
+    "rollbacks": { "side": "upper" }
+  }
+}

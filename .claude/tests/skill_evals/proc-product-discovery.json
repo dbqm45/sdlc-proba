@@ -1,0 +1,160 @@
+{
+  "skill": "proc-product-discovery",
+  "scenarios": [
+    {
+      "id": "prosba-o-funkcje",
+      "expect": "trigger",
+      "prompt": "Szef chce, żebyśmy dodali eksport do Excela, bo „klienci o to proszą”. Jak zdecydować, czy to budować, zanim zaczniemy programować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "wynik",
+            "outcome"
+          ],
+          [
+            "drzewo szans",
+            "opportunity",
+            "JTBD",
+            "problem"
+          ],
+          [
+            "założeń|założen",
+            "assumption",
+            "test"
+          ],
+          [
+            "(co najmniej|minimum|≥|przynajmniej)\\s*(3|trzy)\\s*(rozwiąz|opcj|warian)",
+            "wartoś\\w*[^\\n]{0,200}użyteczn\\w*[^\\n]{0,200}wykonaln"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "priorytety-rice",
+      "expect": "trigger",
+      "prompt": "Mamy listę 12 pomysłów na funkcje i muszę je uszeregować oraz wybrać metryki sukcesu po wydaniu. Jakie metody i metryki zastosować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "RICE"
+          ],
+          [
+            "Kano|MoSCoW"
+          ],
+          [
+            "HEART|OKR|metryk\\w+ ochronn|guardrail"
+          ],
+          [
+            "wynik\\w*[^.]{0,30}(nie|zamiast) (od )?funkcj",
+            "outcome",
+            "mierzaln\\w* (wynik|cel)"
+          ],
+          [
+            "plan\\w* zdarzeń|zdarze\\w+ analityczn|tracking plan",
+            "metryk\\w* wiodąc|leading (metric|indicator)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "narzedzie-wewnetrzne-kup-czy-zbuduj",
+      "expect": "trigger",
+      "prompt": "Zespół chce z pomocą AI zbudować własne narzędzie wewnętrzne, które co rano zbiera dane z Jiry, GitHuba i Slacka do raportu dla kierownika. Czy to budować, kupić gotowe, czy jakoś inaczej? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "uzupełn",
+            "cienk\\w* warstw"
+          ],
+          [
+            "kup",
+            "gotow\\w* (narzędzi|rozwiąz|funkcj)",
+            "SaaS",
+            "istniejąc\\w* narzędzi"
+          ],
+          [
+            "utrzymani",
+            "odpowiedzialnoś",
+            "właściciel"
+          ],
+          [
+            "źródł\\w* prawdy|link\\w* do źródeł",
+            "makiet\\w*[^.]{0,80}(skrypt|eksport)",
+            "kolejnoś\\w* dojrzewania"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "komunikat-prasowy-przed-budowa",
+      "expect": "trigger",
+      "prompt": "Zarząd chce nowego modułu do automatycznego rozliczania delegacji. Zanim zespół zacznie budować, chcę sprawdzić, czy wiemy, po co i dla kogo. Jak to opisać i przetestować przed pierwszą linią kodu? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "komunikat\\w* prasow",
+            "press release",
+            "working backwards",
+            "PR/FAQ"
+          ],
+          [
+            "FAQ",
+            "pytani\\w* i odpowied"
+          ],
+          [
+            "hipotez\\w*",
+            "założe\\w*"
+          ],
+          [
+            "metryk\\w*",
+            "wynik\\w*",
+            "kryteri\\w* sukcesu",
+            "miar\\w*"
+          ],
+          [
+            "test\\w*",
+            "concierge",
+            "prototyp\\w*",
+            "rozmow\\w*"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "roadmapa-wynikow",
+      "expect": "trigger",
+      "prompt": "Nasza roadmapa to lista funkcji z datami na 12 miesięcy i co kwartał ją przepisujemy. Jak ją przebudować, żeby pokazywała, co chcemy osiągnąć? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "wynik\\w*",
+            "outcome"
+          ],
+          [
+            "teraz[^\\n]{0,40}(dalej|następn)[^\\n]{0,40}później",
+            "now[^\\n]{0,20}next[^\\n]{0,20}later"
+          ],
+          [
+            "hipotez\\w*",
+            "problem\\w*",
+            "szans\\w*"
+          ],
+          [
+            "metryk\\w*",
+            "miar\\w*",
+            "wskaźnik\\w*"
+          ]
+        ],
+        "none": [
+          "dodaj (więcej )?dat\\w* do każdej funkcji"
+        ]
+      }
+    },
+    {
+      "id": "projekt-ui",
+      "expect": "no-trigger",
+      "prompt": "Jak zaprojektować formularz rejestracji, żeby był czytelny i dostępny: układ pól, komunikaty błędów, etykiety? Odpowiedz zwięźle.",
+      "neighbor": "ux-feature-design"
+    }
+  ]
+}

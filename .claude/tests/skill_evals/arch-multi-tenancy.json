@@ -1,0 +1,99 @@
+{
+  "skill": "arch-multi-tenancy",
+  "scenarios": [
+    {
+      "id": "izolacja-danych-klientow",
+      "expect": "trigger",
+      "prompt": "Budujemy SaaS B2B na PostgreSQL: wszyscy klienci w jednej bazie, kolumna tenant_id w tabelach. Jak zapewnić, że firma A nigdy nie zobaczy danych firmy B? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "RLS|row level security|ROW LEVEL SECURITY|polityk\\w* wierszy"
+          ],
+          [
+            "tenant_id|najemc\\w*|tenant\\w*"
+          ],
+          [
+            "test\\w*"
+          ],
+          [
+            "SET LOCAL|set_config|kontekst\\w*"
+          ],
+          [
+            "uwierzytelnion\\w+ tożsamoś",
+            "z tokenu",
+            "nie ufaj\\w* (parametr|nagłówk)",
+            "authenticated identity"
+          ],
+          [
+            "dw(óch|a|u) najemc",
+            "two tenants",
+            "zalogowany w A",
+            "najemc\\w* A.{0,80}najemc\\w* B"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tenant-w-zadaniu-w-tle",
+      "expect": "trigger",
+      "prompt": "W naszym wielodzierżawnym SaaS zadanie w kolejce wygenerowało raport z danymi niewłaściwego klienta. Jak przekazywać kontekst najemcy do kolejek i zadań w tle? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "najemc\\w*|tenant\\w*"
+          ],
+          [
+            "wiadomoś\\w*|komunikat\\w*|ładun\\w*|payload|nagłówk\\w*"
+          ],
+          [
+            "jawn\\w*|każd\\w*|zawsze"
+          ],
+          [
+            "test\\w*"
+          ],
+          [
+            "uwierzytelnion\\w+ tożsamoś",
+            "z tokenu",
+            "authenticated identity"
+          ],
+          [
+            "sesj\\w+.{0,60}(pul|następn)",
+            "pul\\w+ połączeń.{0,80}(przenosi|następn)",
+            "connection pool.{0,80}(leak|next)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "indeks-wolne-zapytanie",
+      "expect": "no-trigger",
+      "prompt": "Zapytanie SQL z JOIN na trzech tabelach trwa 4 sekundy. Jak dobrać indeks? Odpowiedz zwięźle.",
+      "neighbor": "be-database"
+    },
+    {
+      "id": "zachowanie-per-najemca",
+      "expect": "trigger",
+      "prompt": "Jeden duży klient naszego SaaS chce innej reguły zatwierdzania zamówień niż wszyscy pozostali. Jak to zrobić bez forka kodu dla tego klienta? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "fork|gałęz\\w*|kopi\\w*"
+          ],
+          [
+            "konfigur\\w*|flag\\w*|polityk\\w*|handler\\w*|strategi\\w*"
+          ],
+          [
+            "właściciel\\w*.{0,40}dat\\w* usunięci",
+            "dat\\w* usunięcia",
+            "\\bADR\\b"
+          ],
+          [
+            "handler\\w* (komendy )?per (najemc|tenant)",
+            "osobn\\w+ (plan|kontekst)"
+          ]
+        ]
+      }
+    }
+  ]
+}

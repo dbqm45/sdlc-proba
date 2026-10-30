@@ -1,0 +1,18 @@
+node_modules/
+.env
+
+# team-factory:begin (managed by factory/install.py)
+.env.*
+!.env.example
+.claude/settings.local.json
+.claude/logs/
+.claude/agent-memory-local/
+.claude/scratch/
+.claude/runs/
+__pycache__/
+.idea
+.claude/factory-manifest.json
+.claude/factory-backup/
+*.factory-new
+.claude/factory-settings.json
+# team-factory:end

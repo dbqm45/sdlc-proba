@@ -1,0 +1,101 @@
+{
+  "skill": "be-api-design",
+  "scenarios": [
+    {
+      "id": "idempotencja-platnosci",
+      "expect": "trigger",
+      "prompt": "Endpoint POST /payments inicjuje przelew, a klient mobilny po timeoucie ponawia żądanie. Jak zapewnić, że nie powstaną dwa przelewy i co zwracać przy ponowieniu? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "Idempotency-Key",
+            "klucz\\w* idempoten"
+          ],
+          [
+            "409",
+            "422",
+            "ta sama odpowied",
+            "zapisan\\w* (odpowied|wynik)",
+            "stored response",
+            "same response",
+            "replay"
+          ],
+          [
+            "inn\\w* (body|treś|payload|dane|ciał)",
+            "różn\\w* (body|treś|payload|ciał)",
+            "hash\\w* (ciał|body|żądani)",
+            "request_hash",
+            "mismatch",
+            "fingerprint",
+            "skrót"
+          ],
+          [
+            "Problem Details",
+            "9457"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "paginacja-kolekcji",
+      "expect": "trigger",
+      "prompt": "Wystawiamy GET /orders z milionami rekordów i wieloma filtrami. Jak zrobić paginację i sortowanie, żeby nikt nie obciążył bazy? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "kursor",
+            "cursor",
+            "keyset"
+          ],
+          [
+            "limit\\w*.*(maks|max|twardy|górn|serwer)",
+            "(maks|max|twardy|górn)\\w* limit",
+            "hard limit"
+          ],
+          [
+            "whitelist",
+            "biał\\w* list",
+            "allowlist",
+            "dozwolon\\w* pol",
+            "lista dozwolon"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "indeksy-orders",
+      "expect": "no-trigger",
+      "prompt": "Jakie indeksy złożone założyć w PostgreSQL na tabeli orders pod zapytania po customer_id i created_at?",
+      "neighbor": "be-database"
+    },
+    {
+      "id": "komenda-jako-zasob",
+      "expect": "trigger",
+      "prompt": "Mamy operację 'zatwierdź reklamację', która nie pasuje do CRUD na zasobie reklamacji. Jak ją wystawić w API HTTP w duchu REST? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "POST"
+          ],
+          [
+            "zasób\\w*|dokument\\w*"
+          ],
+          [
+            "komend\\w*|akcj\\w*|decyzj\\w*"
+          ],
+          [
+            "revocation",
+            "kolejn\\w* komend",
+            "nie używaj `?DELETE",
+            "zamiast `?DELETE"
+          ],
+          [
+            "If-Match",
+            "\\b412\\b",
+            "\\b202\\b"
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "skill": "arch-threat-modeling",
+  "scenarios": [
+    {
+      "id": "model-webhook-upload",
+      "expect": "trigger",
+      "prompt": "Dodajemy webhooki od partnera płatniczego i upload faktur przez klientów. Jak zrobić model zagrożeń tej funkcji? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "STRIDE"
+          ],
+          [
+            "granic\\w* zaufani",
+            "trust boundar"
+          ],
+          [
+            "DFD",
+            "diagram\\w* przepływ\\w* danych",
+            "data.?flow"
+          ],
+          [
+            "rezydualn",
+            "residual",
+            "po kontroli"
+          ],
+          [
+            "test\\w* nadużyci",
+            "abuse case",
+            "misuse case",
+            "powierzchni\\w* ataku",
+            "attack surface"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "ryzyko-ilosciowe",
+      "expect": "trigger",
+      "prompt": "Zarząd pyta, czy warto wydać 200 tys. zł na ochronę przed wyciekiem danych klientów. Jak oszacować ryzyko liczbowo, a nie jako wysokie/średnie? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "\\bFAIR\\b"
+          ],
+          [
+            "Monte ?Carlo",
+            "przedzia",
+            "range"
+          ],
+          [
+            "rezydualn",
+            "residual",
+            "po kontroli",
+            "resztkow",
+            "z kontrolą",
+            "strata po\\b",
+            "po wdrożeniu (kontroli|zabezpiecz|ochron)",
+            "P90 po"
+          ]
+        ]
+      },
+      "accept": [
+        "sec-risk-management"
+      ]
+    },
+    {
+      "id": "incydent-logowania",
+      "expect": "no-trigger",
+      "prompt": "Wykryliśmy podejrzane logowania z obcego IP na konto admina. Co robimy teraz i jak ustalić zakres incydentu?",
+      "neighbor": "ops-security-operations"
+    },
+    {
+      "id": "warstwy-obrony-przeglad",
+      "expect": "trigger",
+      "prompt": "Przed przeglądem architektury chcę sprawdzić, czy mamy obronę w głąb (defence in depth) — sieć, tożsamość, hosty, aplikacja, dane, monitoring. Jak to przejść systematycznie, żeby nie zostawić dziury? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "warstw\\w*"
+          ],
+          [
+            "sieć|sieci|segmentacj\\w*"
+          ],
+          [
+            "tożsamoś\\w*|IAM|uwierzytelni\\w*"
+          ],
+          [
+            "host\\w*|utwardz\\w*"
+          ],
+          [
+            "dane|danych|szyfrowani\\w*"
+          ],
+          [
+            "monitor\\w*|wykrywani\\w*|SIEM|log\\w*"
+          ],
+          [
+            "reagowani\\w*|incydent\\w*|odtworz\\w*"
+          ],
+          [
+            "pojedyncz\\w* (kontrol|punkt)|jedn\\w* kontrol\\w*|zawiedzie|nie polega\\w*"
+          ]
+        ],
+        "none": []
+      },
+      "rubric": [
+        "przegląd per warstwa: kontrola zapobiegawcza, wykrywająca i naprawcza",
+        "każda warstwa ma kontrolę albo zapisaną decyzję (akceptacja ryzyka z właścicielem)",
+        "założenie, że jedna kontrola zawiedzie — co wtedy zatrzyma napastnika",
+        "odesłania do skilli warstw (sec-zero-trust-identity, ops-security-operations, sec-cryptography-pki, sec-appsec-devsecops)"
+      ]
+    }
+  ]
+}

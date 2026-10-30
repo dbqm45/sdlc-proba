@@ -1,0 +1,12 @@
+{
+  "name": "sdlc-sandbox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Trial app for the local sdlc run (pdi L5): a static page served by Node with no dependencies, one behaviour behind a flag.",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "skill": "eng-continuous-delivery",
+  "scenarios": [
+    {
+      "id": "dora-cele",
+      "expect": "trigger",
+      "prompt": "Szef chce wpisać zespołom w cele kwartalne częstotliwość wdrożeń i czas realizacji zmiany z DORA oraz porównać zespoły w rankingu. Czy to dobry pomysł? Jakie są te metryki? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "Goodhart"
+          ],
+          [
+            "nie cel|nie są cel|nie jako cel|do uczenia|uczenia się"
+          ],
+          [
+            "z nim samym|z samym sobą|samym ze sobą",
+            "(system|zesp\\w*|usług\\w*).{0,40}(z nim samym|w czasie|własn\\w* trend)"
+          ],
+          [
+            "przeróbek|rework"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tbd-flagi",
+      "expect": "trigger",
+      "prompt": "Mamy gałęzie funkcji żyjące po 3 tygodnie i bolesne merge'e. Jak przejść na trunk-based development i bezpiecznie wdrażać niedokończone funkcje? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "feature flag|flag\\w+ funkcji|przełącznik"
+          ],
+          [
+            "właściciel|data usunięcia|datę usunięcia|termin usunięcia"
+          ],
+          [
+            "1.{0,3}2 dni|dzień|codziennie"
+          ],
+          [
+            "DORA.{0,80}(nie (jako )?cel|uczeni)",
+            "wskaźnik\\w* do uczenia"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "etapy-flagi-w-planie",
+      "expect": "trigger",
+      "prompt": "Wdrażamy nową funkcję za feature flagą. Gdzie i jak zapisać plan jej udostępniania, żeby dało się sprawdzić, czy idziemy zgodnie z planem i kiedy flagę usunąć? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "release\\.yaml",
+            "plan wydania"
+          ],
+          [
+            "etap",
+            "wewnętrz",
+            "internal",
+            "10 ?%"
+          ],
+          [
+            "kryteri\\w* wyjścia",
+            "exit"
+          ],
+          [
+            "dat\\w* usunięcia",
+            "remove_by"
+          ]
+        ]
+      },
+      "rubric": [
+        "etapy udostępniania (wewnętrzni → procent → 100%) z kryterium wyjścia i minimalnym czasem",
+        "zapisane w planie wydania (release.yaml), nie tylko w opisie wydania",
+        "właściciel i data usunięcia flagi"
+      ]
+    },
+    {
+      "id": "github-actions",
+      "expect": "no-trigger",
+      "prompt": "Jak skonfigurować w GitHub Actions cache zależności npm i matrycę wersji Node dla budowania? Odpowiedz zwięźle.",
+      "neighbor": "ops-ci-cd"
+    }
+  ]
+}

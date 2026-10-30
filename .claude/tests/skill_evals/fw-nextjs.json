@@ -1,0 +1,180 @@
+{
+  "skill": "fw-nextjs",
+  "scenarios": [
+    {
+      "id": "akcja-bez-autoryzacji",
+      "expect": "trigger",
+      "prompt": "W app/orders/actions.ts (Next.js 16.3) jest Server Action usuwająca zamówienie; logowanie sprawdzamy w app/orders/layout.tsx. Czy to wystarczy i jak potem odświeżyć listę zamówień? Odpowiedz zwięźle.",
+      "files": {
+        "app/orders/actions.ts": "'use server';\nimport { db } from '@/lib/db';\n\nexport async function deleteOrder(id: string) {\n  await db.order.delete({ where: { id } });\n}\n",
+        "app/orders/layout.tsx": "import { redirect } from 'next/navigation';\nimport { getSession } from '@/lib/auth';\n\nexport default async function Layout({ children }: { children: React.ReactNode }) {\n  if (!(await getSession())) redirect('/login');\n  return children;\n}\n"
+      },
+      "checks": {
+        "all": [
+          [
+            "w każdej (akcji|Server Action|funkcji)",
+            "wewnątrz (akcji|funkcji)",
+            "w samej akcji",
+            "publiczn\\w* endpoint",
+            "bezpośredni\\w* (żądani\\w* )?POST",
+            "dowoln\\w* (żądani|POST)"
+          ],
+          [
+            "właściciel",
+            "należy do",
+            "IDOR",
+            "własnoś",
+            "uprawnie"
+          ],
+          [
+            "updateTag",
+            "revalidatePath",
+            "revalidateTag",
+            "refresh\\("
+          ]
+        ]
+      }
+    },
+    {
+      "id": "migracja-16",
+      "expect": "trigger",
+      "prompt": "Przechodzimy z Next.js 15.5 na 16 (package.json, middleware.ts, app/products/[id]/page.tsx). Co musimy zmienić w kodzie i jak to zrobić najmniejszym kosztem? Odpowiedz zwięźle.",
+      "files": {
+        "package.json": "{\n  \"dependencies\": { \"next\": \"15.5.9\", \"react\": \"19.1.4\", \"react-dom\": \"19.1.4\" }\n}\n",
+        "middleware.ts": "import { NextResponse, type NextRequest } from 'next/server';\n\nexport function middleware(req: NextRequest) {\n  if (!req.cookies.get('session')) return NextResponse.redirect(new URL('/login', req.url));\n}\n\nexport const config = { matcher: ['/orders/:path*'] };\n",
+        "app/products/[id]/page.tsx": "export default function Page({ params }: { params: { id: string } }) {\n  return <h1>{params.id}</h1>;\n}\n"
+      },
+      "checks": {
+        "all": [
+          [
+            "proxy\\.ts",
+            "proxy"
+          ],
+          [
+            "await"
+          ],
+          [
+            "codemod"
+          ],
+          [
+            "CVE-2025-29927",
+            "\\bDAL\\b",
+            "warstw\\w* dostępu do danych",
+            "data access layer",
+            "nie tylko w (proxy|middleware)",
+            "omin\\w+ (proxy|middleware)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "bez-plikow-cache",
+      "expect": "trigger",
+      "prompt": "Nowa aplikacja w Next.js 16.3 z włączonym cacheComponents. Jak cache'ować listę produktów i od razu pokazać zmianę po edycji w panelu admina? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "use cache"
+          ],
+          [
+            "cacheTag"
+          ],
+          [
+            "updateTag"
+          ],
+          [
+            "publiczn\\w* endpoint",
+            "w (każdej|samej) akcji",
+            "server-only",
+            "requireAdmin",
+            "sprawdź\\w* (sesj|uprawnie)"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "react-vite-wyscig",
+      "expect": "no-trigger",
+      "neighbor": "fw-react",
+      "prompt": "W aplikacji React 19 na Vite (bez frameworka) efekt pobiera wyniki po zmianie filtra i czasem pokazuje stare dane. Jak to naprawić?"
+    },
+    {
+      "id": "use-cache-i-cookies",
+      "expect": "trigger",
+      "prompt": "Next.js 16.3, cacheComponents: true. Funkcja z 'use cache' pobiera profil użytkownika i czyta w środku cookies(), a build zgłasza błąd. Jak to poprawić, żeby cache nadal działał? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "argument\\w*",
+            "poza (funkcj|cache)",
+            "przekaż\\w*",
+            "use cache: private"
+          ],
+          [
+            "klucz\\w*",
+            "cacheTag",
+            "cacheLife",
+            "Suspense"
+          ],
+          [
+            "updateTag",
+            "server-only",
+            "\\bDTO\\b"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "hydratacja-daty",
+      "expect": "trigger",
+      "prompt": "Aplikacja Next.js 16: w konsoli przeglądarki pojawia się błąd hydratacji (tekst z serwera nie pasuje do klienta) w komponencie, który renderuje new Date().toLocaleString(). Skąd to się bierze i jak to naprawić? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "stref\\w* czasow",
+            "różn\\w* (wynik|wartoś|tekst|czas)",
+            "serwer\\w*.{0,60}klient",
+            "inn\\w* (czas|wartoś)"
+          ],
+          [
+            "useEffect",
+            "po zamontowaniu",
+            "po hydratacji",
+            "suppressHydrationWarning",
+            "przekaż\\w*.{0,40}(serwer|ISO)",
+            "toISOString"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "wiele-instancji-cache",
+      "expect": "trigger",
+      "prompt": "Hostujemy Next.js 16 sami: obraz Dockera i 3 repliki za load balancerem. Po revalidateTag część użytkowników nadal widzi stare dane. Dlaczego i co z tym zrobić? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "lokaln\\w* (dysk|pamię|cache|dla)",
+            "każd\\w* (z \\d+ )?(instancj|replik)\\w*",
+            "jednej (instancji|repliki)",
+            "system\\w* plików",
+            "nie współdziel\\w*"
+          ],
+          [
+            "cache ?handler",
+            "cacheHandler",
+            "wspóln\\w* (cache|magazyn|pamię)",
+            "Redis"
+          ],
+          [
+            "use cache: remote",
+            "OpenNext",
+            "adapter\\w* wdroże\\w*",
+            "deployment adapter",
+            "sticky"
+          ]
+        ]
+      }
+    }
+  ]
+}

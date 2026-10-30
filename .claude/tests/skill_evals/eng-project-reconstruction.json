@@ -1,0 +1,293 @@
+{
+ "skill": "eng-project-reconstruction",
+ "scenarios": [
+  {
+   "id": "duze-stare-repo-raport",
+   "expect": "trigger",
+   "prompt": "Dostałem do przejęcia duże repozytorium (ok. 400 tys. linii, Java i trochę Go, historia od 2012 r.), bez dokumentacji. Chcę z samego kodu odtworzyć, czym jest ten projekt: domeny, stack, wymagania, reguły i standardy, i dostać czytelny raport. Jak to zrobić tanio i rzetelnie? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["plik:linia", "dow[oó]d\\w*"],
+     ["skrypt\\w*", "deterministycz", "bez modelu", "0 token"],
+     ["tańsz\\w* model", "haiku", "kaskad"],
+     ["budżet", "szacun\\w* koszt", "limit koszt"],
+     ["standard\\w*"],
+     ["pewnoś", "czego nie sprawdz", "pytani\\w* do (ludzi|zespołu|człowieka)"]
+    ],
+    "none": ["przeczytaj całe repo", "wczytaj całe repo do kontekstu"]
+   }
+  },
+  {
+   "id": "standardy-z-kodu",
+   "expect": "trigger",
+   "prompt": "Chcę wyciągnąć z istniejącego kodu standardy, których zespół faktycznie przestrzega (nazewnictwo, obsługa błędów, testy, API), żeby agent AI pisał nowy kod tak samo. Nikt ich nie spisał. Jak to zrobić, żeby nie wyszła lista życzeń? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["liczb\\w* wystąpień", "ile razy", "częstoś", "\\d+ ?%"],
+     ["wyjąt\\w*", "odstęp\\w*", "sprzecznoś"],
+     ["plik:linia", "dow[oó]d\\w*", "przykład\\w* z kodu"],
+     ["INDEX", "spis", "indeks"]
+    ],
+    "none": ["przyjmij (standard|konwencj)\\w* z internetu"]
+   }
+  },
+  {
+   "id": "odswiezenie-po-zmianach",
+   "expect": "trigger",
+   "prompt": "Miesiąc temu zrobiliśmy z kodu raport o projekcie (moduły, domeny, reguły, standardy). Od tego czasu zmieniło się kilkadziesiąt plików. Jak go zaktualizować bez ponownej analizy całego repo? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["git diff", "zmienion\\w* plik", "hash"],
+     ["tylko (zmienion|dotknięt)", "przyrostow"],
+     ["manifest", "commit\\w* bazow", "commit\\w*"]
+    ]
+   }
+  },
+  {
+   "id": "wymagania-z-testow",
+   "expect": "trigger",
+   "prompt": "Mamy system w C# bez specyfikacji. Chcę odtworzyć z kodu wymagania i reguły biznesowe, a potem dać je zespołowi do potwierdzenia. Skąd w kodzie je brać i jak oznaczyć, co jest pewne? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["test\\w*"],
+     ["walidacj", "ograniczen\\w* w (bazie|schemacie)", "schemat\\w* bazy"],
+     ["endpoint", "kontroler", "API"],
+     ["pewnoś", "do potwierdzenia", "niepotwierdzon"]
+    ]
+   }
+  },
+  {
+   "id": "raport-do-udostepnienia",
+   "expect": "trigger",
+   "prompt": "Mamy już z kodu raport o projekcie w Markdown (moduły, domeny, reguły, standardy). Szef chce go przejrzeć w przeglądarce i pokazać zarządowi, a za miesiąc odświeżymy go po zmianach w repo. Jak go podać i jak potem odświeżyć, żeby nie płacić drugi raz za całe repozytorium? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["HTML", "Artifact", "stron\\w* (www|w przeglądarce)"],
+     ["Markdown\\w* (zostaje|jest źródłem)", "źródł\\w* prawdy", "z Markdown"],
+     ["prywatn", "za zgodą", "nie (publikuj|udostępniaj) bez"],
+     ["manifest", "hash"],
+     ["tylko (zmienion|dotknięt)", "przyrostow", "partie ze zmian"]
+    ],
+    "none": ["przeanalizuj (ponownie )?całe repo", "pełn\\w* przebieg za każdym razem"]
+   }
+  },
+  {
+   "id": "wejscie-dla-automatu-historyjek",
+   "expect": "trigger",
+   "prompt": "Zanim automat zacznie realizować historyjki w tym repo, chcę, żeby znał projekt: słownik domeny, moduły i obowiązujące konwencje kodu. Jak przygotować taki opis z samego kodu, żeby agent mógł go czytać przy każdej historyjce? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["słownik", "glosariusz"],
+     ["standard\\w*", "konwencj"],
+     ["docs/project", "plik\\w* (wynikow|w repo)", "INDEX"],
+     ["plik:linia", "dow[oó]d\\w*"]
+    ]
+   }
+  },
+  {
+   "id": "stack-i-moduly-w-raporcie",
+   "expect": "trigger",
+   "prompt": "Przejmujemy repozytorium Spring Boot bez dokumentacji. Z rekonstrukcji z kodu potrzebuję przede wszystkim rzetelnej części o stacku i modułach: co dokładnie ma się tam znaleźć, żeby nowa osoba i agent nie musieli zgadywać? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["tabel\\w*"],
+     ["wersj\\w*"],
+     ["CI", "pipeline", "GitHub Actions"],
+     ["profil\\w*", "application\\.(properties|yml)", "ddl-auto"],
+     ["rozjazd\\w*", "niezgodn\\w* wersj", "różn\\w* wersj"],
+     ["odpowiedzialnoś\\w*", "za co odpowiada"],
+     ["plik:linia", "dow[oó]d\\w*"]
+    ],
+    "none": ["wystarczy (lista|nazwa) frameworka"]
+   }
+  },
+  {
+   "id": "karty-modulow-do-dokumentacji",
+   "expect": "trigger",
+   "prompt": "Po rekonstrukcji kodu mam karty modułów w JSON, a sekcja modułów w raporcie jest ogólnikowa: brakuje endpointów, encji i reguł, które siedzą w kartach. Do tego raport twierdzi, że repo nie ma CI, choć jest katalog .github/workflows. Jak to poprawić tanio i tak, żeby się nie powtórzyło? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["skrypt\\w*", "bez modelu", "deterministycz", "recon_cards"],
+     ["\\.md", "Markdown"],
+     ["plik:linia", "dow[oó]d\\w*"],
+     ["\\.github/workflows", "plik\\w* pipeline", "plik\\w* CI"],
+     ["kontrol\\w*", "sprawdz\\w*", "recon_check", "bramk\\w*"]
+    ],
+    "none": ["przepisz (ręcznie )?wszystkie karty", "uruchom ponownie całą rekonstrukcję"]
+   }
+  },
+  {
+   "id": "standard-testow-i-idiomy",
+   "expect": "trigger",
+   "prompt": "Rekonstruuję standardy z kodu dużej aplikacji. Wyszło mi „testy: JUnit 5, osobny katalog” i tyle — agent dalej pisze testy inaczej niż zespół. Co jeszcze powinien zawierać standard testów i idiomów kodu wyciągnięty z repo, żeby był użyteczny? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["warstw\\w*", "rodzaj\\w* test\\w*", "WebMvcTest", "DataJpaTest", "integracyjn\\w*"],
+     ["dubler\\w*", "mock\\w*", "Mockito", "NSubstitute"],
+     ["builder\\w*", "dane testowe", "fixture\\w*", "parametr\\w*", "tabel\\w* przypadk"],
+     ["plik:linia", "przykład\\w* z kodu", "dow[oó]d\\w*"],
+     ["udział\\w*", "\\d+ ?%", "ile (razy|plików)", "wyjąt\\w*"]
+    ],
+    "none": ["wystarczy (podać|nazwa) framework"]
+   }
+  },
+  {
+   "id": "male-repo-koszt",
+   "expect": "trigger",
+   "prompt": "Rekonstrukcja małego repozytorium (ok. 5 tys. linii Javy) kosztowała 2 USD, bo główny model sam przeczytał wszystkie pliki i napisał karty, reguły i standardy. Jak to zrobić o połowę taniej, nie tracąc jakości raportu? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["haiku", "tańsz\\w* model", "wykonawc\\w*", "deleg\\w*"],
+     ["skrypt\\w*", "bez modelu", "deterministycz"],
+     ["nie czyta\\w*", "nie wczytuj", "streszczeni\\w*", "kontekst\\w*"],
+     ["kart\\w*"],
+     ["reguł\\w*", "rules\\.md"]
+    ],
+    "none": ["przejdź na droższy model", "wyłącz kontrol\\w* dowodów"]
+   }
+  },
+  {
+   "id": "odswiezenie-usunieta-regula",
+   "expect": "trigger",
+   "prompt": "Odświeżyłem rekonstrukcję z kodu po zmianach: usunięto regułę odrzucania duplikatów nazw i zmieniono format telefonu z 10 na 9 cyfr. Karty modułów są nowe, ale w wymaganiach i w jednej karcie nadal zostały stare opisy. Jak przy odświeżaniu tanio znaleźć takie pozostałości? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["star\\w* kart\\w*", "poprzedni\\w* kart\\w*", "cards-prev", "--prev"],
+     ["porówn\\w*", "różnic\\w*", "diff"],
+     ["skrypt\\w*", "bez modelu", "recon_cards"],
+     ["usunięt\\w*", "zmienion\\w*"],
+     ["przejrz\\w*", "sprawdz\\w*", "popraw\\w*"]
+    ],
+    "none": ["przebuduj całą rekonstrukcję od zera"]
+   }
+  },
+  {
+   "id": "uklad-pakietow-i-di",
+   "expect": "trigger",
+   "prompt": "Z rekonstrukcji kodu mam standardy nazewnictwa i testów, ale agent dalej wrzuca nowe klasy w złe miejsca i rejestruje usługi z innym czasem życia niż reszta. Jak wyciągnąć z repo standard układu pakietów i rejestracji zależności? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["według funkcji", "feature", "według warstw", "warstw\\w*", "pakiet\\w*"],
+     ["czas\\w* życia", "AddScoped", "Singleton", "Transient", "scope"],
+     ["skrypt\\w*", "skan\\w*", "policz\\w*", "standards_scan"],
+     ["plik:linia", "przykład\\w*", "dow[oó]d\\w*"],
+     ["udział\\w*", "\\d+ ?%", "wyjąt\\w*", "ile katalog\\w*"]
+    ],
+    "none": ["wymyśl\\w* układ", "przyjmij układ z innego projektu"]
+   }
+  },
+  {
+   "id": "odswiezenie-tanio",
+   "expect": "trigger",
+   "prompt": "Mam rekonstrukcję z kodu z manifestem. Zmieniły się 3 pliki z logiką. Ostatnie odświeżenie kosztowało więcej niż konkurencyjne narzędzie, bo główny model sam szukał zmian, kopiował karty i kilka razy poprawiał dowody. Jak odświeżyć dokumentację tanio, bez utraty jakości? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["skrypt\\w*", "bez modelu", "recon_refresh", "prep"],
+     ["manifest\\w*", "diff", "zmienion\\w* plik\\w*"],
+     ["haiku", "tańsz\\w* model", "wykonawc\\w*"],
+     ["tylko zmienion\\w*", "aktualizuj\\w* kart\\w*", "zaktualizuj\\w*", "przyrostow\\w*"],
+     ["star\\w* opis\\w*", "pozostałoś\\w*", "STALE", "--prev", "do sprawdzenia"],
+     ["apply", "jedn\\w* polecen\\w*", "jedn\\w* tur\\w*", "jedn\\w* zapis\\w*"]
+    ],
+    "none": ["przebuduj całą rekonstrukcję od zera", "przeczytaj całe repozytorium"]
+   }
+  },
+  {
+   "id": "eksport-json-dla-narzedzi",
+   "expect": "trigger",
+   "prompt": "Mamy gotową rekonstrukcję projektu z kodu w docs/project/00-reconstruction. Narzędzie do kontroli wymagań chce czytać reguły i wymagania z kodu maszynowo, z dowodami plik:linia, i śledzić je między odświeżeniami. Jak to przygotować? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     [
+      "recon_export\\.py"
+     ],
+     [
+      "reconstruction\\.json"
+     ],
+     [
+      "identyfikator",
+      "\\bid\\b",
+      "stał\\w*"
+     ],
+     [
+      "--repo",
+      "verified",
+      "sprawdz\\w* dowod",
+      "zgodn\\w* z kodem"
+     ]
+    ]
+   },
+   "rubric": [
+    "recon_export.py <katalog> --repo <repo> → reconstruction.json obok rules.md (te same treści)",
+    "dowody rozbite na plik i linie, z oznaczeniem zgodności z kodem (--repo)",
+    "stały identyfikator pozycji z treści — śledzenie między odświeżeniami; recon_refresh finish odświeża eksport"
+   ]
+  },
+  {
+   "id": "review-draft-do-ci",
+   "expect": "trigger",
+   "prompt": "Rekonstrukcja z kodu zrobiła REVIEW.draft.md, przejrzałem go i jest dobry. Jak zrobić z niego zasady dla przeglądu PR przez AI w CI? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     [
+      "review-md"
+     ],
+     [
+      "REVIEW\\.md"
+     ],
+     [
+      "ai_review\\.py install",
+      "ai-review\\.yml"
+     ]
+    ]
+   },
+   "rubric": [
+    "ai_review.py review-md przenosi zatwierdzony szkic do REVIEW.md (bez nadpisania istniejącego)",
+    "ai_review.py install zakłada workflow przeglądu, który czyta REVIEW.md"
+   ]
+  },
+  {
+   "id": "dossier-przed-refaktorem",
+   "expect": "no-trigger",
+   "neighbor": "eng-legacy-dossier",
+   "prompt": "Przed refaktorem modułu rozliczeń w starym systemie chcę ocenić jego architekturę: as-is, ocena rozwiązań z dowodami i roadmapa zmian z priorytetami. Jak to przeprowadzić? Odpowiedz zwięźle.",
+   "checks": {"all": [["as-is", "stan obecn"], ["roadmap"]]}
+  },
+  {
+   "id": "wplyw-zmiany-pliku",
+   "expect": "no-trigger",
+   "neighbor": "eng-codebase-mapping",
+   "prompt": "Muszę zmienić sygnaturę jednej funkcji w serwisie płatności. Jak szybko sprawdzić, co od niej zależy i które testy uruchomić? Odpowiedz zwięźle.",
+   "checks": {"all": [["import\\w*", "zależn\\w*"], ["test\\w*"]]}
+  },
+  {
+   "id": "dlug-techniczny-priorytety",
+   "expect": "no-trigger",
+   "neighbor": "eng-tech-debt-audit",
+   "prompt": "Zrób mi audyt długu technicznego naszego repo: co najbardziej boli, waga, wysiłek naprawy i kolejność. Jak to podejść? Odpowiedz zwięźle.",
+   "checks": {"all": [["wag\\w*", "wpływ"], ["wysił\\w*", "koszt"]]}
+  },
+  {
+   "id": "pelny-audyt-bezpieczenstwo",
+   "expect": "no-trigger",
+   "neighbor": "eng-code-audit",
+   "prompt": "Klient chce pełnego audytu kodu przed zakupem firmy: architektura, bezpieczeństwo, jakość, dostępność i zgodność z prawem, ze wspólnym rankingiem ustaleń. Jak to zorganizować w budżecie? Odpowiedz zwięźle.",
+   "checks": {"all": [["bezpieczeńst"], ["ranking", "priorytet"]]}
+    },
+  {
+   "id": "odswiezenie-komentarze",
+   "expect": "trigger",
+   "prompt": "Mam rekonstrukcję z kodu z manifestem. Od ostatniego odświeżenia w 12 plikach zmieniły się tylko komentarze, w kilku dopisano linie komentarza w środku pliku. Jak odświeżyć dokumentację najtaniej i czy dowody plik:linia pozostaną poprawne? Odpowiedz zwięźle.",
+   "checks": {
+    "all": [
+     ["recon_refresh", "prep", "skrypt\\w*"],
+     ["tylko komentarz\\w*", "same komentarz\\w*", "komentarz\\w* i pust\\w* lini\\w*"],
+     ["bez zleceń", "bez wykonawc\\w*", "nie (dostaj|zlec)\\w*", "pomij\\w*"],
+     ["przelicz\\w*", "przesunięt\\w*", "numer\\w* lini\\w*"],
+     ["finish", "kontrol\\w* końcow\\w*", "recon_check"]
+    ],
+    "none": ["przebuduj całą rekonstrukcję od zera", "przeczytaj całe repozytorium"]
+   }
+  }
+ ]
+}
