@@ -2,12 +2,16 @@
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /**
- * @param {{ env: string, on: (key: string) => boolean }} input `on` says whether a flag is on for this visitor
+ * @param {{ env: string, on: (key: string) => boolean, deployedAt?: string|null }} input
+ *   `on` says whether a flag is on for this visitor; `deployedAt` is the ISO date from config/build.json
  * @returns {string} HTML
  */
-function renderPage({ env, on }) {
+function renderPage({ env, on, deployedAt }) {
     const banner = on('welcome_banner')
         ? '<p class="banner" data-flag="welcome_banner">Witaj w sdlc-sandbox — repo próbnym całego przepływu.</p>'
+        : '';
+    const footer = (on('show_last_deployed') && deployedAt)
+        ? `<footer><p data-flag="show_last_deployed">Ostatnie wdrożenie: ${escape(deployedAt)}</p></footer>`
         : '';
     return `<!doctype html>
 <html lang="pl">
@@ -19,6 +23,7 @@ function renderPage({ env, on }) {
 ${banner}
 <p>Środowisko: <strong>${escape(env)}</strong></p>
 </main>
+${footer}
 </body>
 </html>
 `;

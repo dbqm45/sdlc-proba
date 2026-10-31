@@ -8,7 +8,16 @@ const { readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+const BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
 const VISITOR_COOKIE = 'visitor';
+
+function readBuildInfo() {
+    try {
+        return JSON.parse(fs.readFileSync(BUILD_FILE, 'utf8'));
+    } catch (_) {
+        return {};
+    }
+}
 
 function visitorOf(req) {
     const match = /(?:^|;\s*)visitor=([A-Za-z0-9_-]{8,64})/.exec(req.headers.cookie || '');
@@ -20,6 +29,7 @@ function visitorOf(req) {
  * @returns {http.Server}
  */
 function createServer({ env = process.env.APP_ENV || 'test', configDir } = {}) {
+    const { deployedAt = null } = readBuildInfo();
     return http.createServer((req, res) => {
         const url = new URL(req.url, 'http://localhost');
         if (req.method !== 'GET') {
@@ -42,7 +52,7 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir } = {}) {
         const visitor = visitorOf(req);
         const headers = { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'self'" };
         if (visitor.fresh) headers['set-cookie'] = `${VISITOR_COOKIE}=${visitor.id}; Path=/; HttpOnly; SameSite=Lax`;
-        res.writeHead(200, headers).end(renderPage({ env, on: (key) => isOn(flags, key, visitor.id) }));
+        res.writeHead(200, headers).end(renderPage({ env, on: (key) => isOn(flags, key, visitor.id), deployedAt }));
     });
 }
 
