@@ -119,10 +119,10 @@ lub wartość pusta. Stopka bez daty, strona działa normalnie (DEC-0005).
 
 | Wymaganie | Ścieżka | Stan | Ramka | Uwagi |
 |---|---|---|---|---|
-| US-1 | Odwiedzający sprawdza aktualność strony | idle | brak: bez Figmy | Istniejąca stopka z „Ostatnie wdrożenie: RRRR-MM-DD” (flaga ON, `deployedAt` niepuste). |
+| US-1 | Odwiedzający sprawdza aktualność strony | idle | brak | Bez Figmy (D-F3). Istniejąca stopka z „Ostatnie wdrożenie: RRRR-MM-DD” (flaga ON, `deployedAt` niepuste). |
 | US-1 | Odwiedzający sprawdza aktualność strony | success | nie dotyczy | Strona SSR bez asynchronicznej akcji użytkownika; wartość dostarcza stan idle. |
-| US-1 | Odwiedzający sprawdza aktualność strony | server_error | brak: bez Figmy | `config/build.json` niedostępny lub błędny → stopka bez daty, HTTP 200. |
-| US-1 | Odwiedzający sprawdza aktualność strony | empty | brak: bez Figmy | Brak lub puste `deployedAt` → stopka bez daty. |
+| US-1 | Odwiedzający sprawdza aktualność strony | server_error | brak | Bez Figmy (D-F3). `config/build.json` niedostępny lub błędny → stopka bez daty, HTTP 200. |
+| US-1 | Odwiedzający sprawdza aktualność strony | empty | brak | Bez Figmy (D-F3). Brak lub puste `deployedAt` → stopka bez daty. |
 
 ## Rozstrzygnięcia z bramek
 
