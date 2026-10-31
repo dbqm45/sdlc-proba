@@ -8,12 +8,12 @@ const { readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-const BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
+const DEFAULT_BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
 const VISITOR_COOKIE = 'visitor';
 
-function readBuildInfo() {
+function readBuildInfo(file) {
     try {
-        return JSON.parse(fs.readFileSync(BUILD_FILE, 'utf8'));
+        return JSON.parse(fs.readFileSync(file, 'utf8'));
     } catch (_) {
         return {};
     }
@@ -25,11 +25,11 @@ function visitorOf(req) {
 }
 
 /**
- * @param {{ env?: string, configDir?: string }} [options]
+ * @param {{ env?: string, configDir?: string, buildFile?: string }} [options]
  * @returns {http.Server}
  */
-function createServer({ env = process.env.APP_ENV || 'test', configDir } = {}) {
-    const { deployedAt = null } = readBuildInfo();
+function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE } = {}) {
+    const { deployedAt = null } = readBuildInfo(buildFile);
     return http.createServer((req, res) => {
         const url = new URL(req.url, 'http://localhost');
         if (req.method !== 'GET') {
