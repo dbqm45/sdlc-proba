@@ -41,8 +41,19 @@ później (`decision pending`). Nie wymyślaj numerów.
 - zrodlo: manual
 - szkic: human
 
-## Bramka B2: approved
+## Bramka B1: approved
 - ref: CHG-1/D2
+- id: DEC-0002
+- wyslano: tak
+- kiedy: 2026-10-30
+- kto: pdi
+- rodzaj: gate
+- dlaczego: decyzja w skrzynce bramek pdi (DEC-0002); uzasadnienie w rejestrze pdi
+- zrodlo: manual
+- szkic: human
+
+## Bramka B2: approved
+- ref: CHG-1/D3
 - id: DEC-0003
 - wyslano: tak
 - kiedy: 2026-10-30
