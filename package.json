@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "engines": { "node": ">=20" },
   "scripts": {
+    "build": "node scripts/build-info.js",
     "start": "node src/server.js",
     "test": "node --test"
   }
