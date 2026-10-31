@@ -18,10 +18,12 @@ releases:
 flags:
   - key: show_last_deployed
     tasks: [TSK-2]
-    owner: "właściciel produktu"
+    owner: "dbqm45"
     remove_by: 2027-01-30
     rollout:
       - stage: internal
-        min_days: 3
+        min_days: 0
         exit: "data wdrożenia widoczna w stopce na środowisku wewnętrznym; brak błędów 5xx w logach serwera"
       - stage: "100%"
+        min_days: 0
+        exit: "data widoczna dla wszystkich na prod; zero rollbacków przez horyzont MVP (7 dni); potem PR usuwający flagę"
