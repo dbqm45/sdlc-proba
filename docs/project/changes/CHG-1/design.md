@@ -2,24 +2,27 @@
 artifact: design
 phase: architecture
 status: proposed
-version: 1
-author: tomasz
+version: 2
+author: natalia
 created: 2026-10-30
-updated: 2026-10-30
-inputs: [docs/project/changes/CHG-1/intent.md]
+updated: 2026-10-31
+inputs: [docs/project/changes/CHG-1/intent.md, docs/project/changes/CHG-1/requirements.md]
 change: CHG-1
 source: PRB-1
 source_reported_at: 2026-10-30
 ---
-# Projekt architektury CHG-1
+# Projekt zmiany CHG-1
 
-## Rozwiązanie przyjęte
+Część „Architektura” przygotował tomasz (faza architecture), część „Doświadczenie” natalia (faza design). Plik Figmy:
+brak — repo próbne nie ma projektu w Figmie (D-F3 otwarta), stany opisane tekstem.
+
+## Architektura
+
+### Rozwiązanie przyjęte
 
 Wariant A z `intent.md`: data wdrożenia czytana z `config/build.json`, renderowana w stopce strony za flagą
-`show_last_deployed`. Plik `config/build.json` generowany w kroku wdrożenia — analogia do istniejącego wzorca
-`config/flags.*.json` (plik JSON w `config/`, czytany przez serwer przy starcie).
-
-## Decyzje techniczne
+`show_last_deployed`. Plik `config/build.json` generowany przez skrypt w repo — analogia do istniejącego wzorca
+`config/flags.*.json` (plik JSON w `config/`, czytany przez serwer).
 
 ### DT-1: Plik JSON jako źródło daty wdrożenia (nie zmienna środowiskowa)
 
@@ -44,46 +47,90 @@ utrudniałaby lokalne odtworzenie zachowania produkcyjnego.
 **Powód:** Data wdrożenia nie zmienia się w trakcie życia procesu. Odczyt przy starcie (`createServer`)
 jest prostszy i eliminuje powtarzalne I/O. Zmiana daty (nowe wdrożenie) wymaga restartu serwera — co i tak
 jest warunkiem wdrożenia. Bez zmiany: `readFlags` pozostaje per żądanie (flagi mogą się zmieniać bez restartu).
+Brak pliku, błąd odczytu albo brak pola `deployedAt` daje `deployedAt` puste — serwer startuje normalnie.
 
 ### DT-4: Renderowanie w elemencie `<footer>` w `src/page.js`
 
 **Powód:** Stopka jest semantycznie właściwym miejscem dla metadanych strony. Wymaga dodania parametru
 `deployedAt` do sygnatury `renderPage({ env, on, deployedAt })`. Wartość jest escapowana przez istniejącą
-funkcję `escape()`. Renderowana tylko gdy `on('show_last_deployed')` zwraca `true`.
+funkcję `escape()`. Data renderowana tylko gdy `on('show_last_deployed')` zwraca `true` i `deployedAt` nie jest
+puste.
 
-## Przepływ danych
+### Przepływ danych
 
 ```
-Krok wdrożenia
+npm run build (przed startem aplikacji)
   → zapisuje config/build.json { "deployedAt": "YYYY-MM-DD" }
 
 createServer() (startup)
-  → readBuildInfo() czyta config/build.json → { deployedAt }
+  → readBuildInfo() czyta config/build.json → { deployedAt } (puste przy braku lub błędzie)
 
 GET /
   → readFlags(env) → flags
   → visitorOf(req) → visitor
   → renderPage({ env, on: (key) => isOn(flags, key, visitor.id), deployedAt })
-     ↳ on('show_last_deployed') = true
-        → <footer>Wdrożono: <date>YYYY-MM-DD</date></footer>
-     ↳ on('show_last_deployed') = false
-        → stopka niewidoczna
+     ↳ on('show_last_deployed') = true i deployedAt niepuste
+        → <footer>Ostatnie wdrożenie: <time>YYYY-MM-DD</time></footer>
+     ↳ w przeciwnym razie
+        → stopka bez daty
 ```
 
-## Zmiany w komponentach
+### Zmiany w komponentach
 
 | Komponent | Zmiana |
 |---|---|
-| `config/build.json` | Nowy plik generowany przy wdrożeniu; pole `deployedAt` (ISO 8601). |
+| `config/build.json` | Nowy plik generowany przez `npm run build`; pole `deployedAt` (ISO 8601). Nie jest commitowany. |
 | `package.json` | Nowy skrypt `build` zapisujący `config/build.json` z bieżącą datą. |
-| `.gitignore` | **Zależy od bramki B3** — patrz Pytania do bramki. |
+| `.gitignore` | Wpis `config/build.json` (DEC-0003). |
 | `src/server.js` | Odczyt `config/build.json` przy starcie; przekazanie `deployedAt` do `renderPage`. |
-| `src/page.js` | Nowy parametr `deployedAt`; renderowanie `<footer>` za flagą `show_last_deployed`. |
+| `src/page.js` | Nowy parametr `deployedAt`; data w istniejącej stopce za flagą `show_last_deployed`. |
+| `public/style.css` | Styl daty w istniejącej stopce (bez nowego komponentu). |
 | `config/flags.prod.json` | Wpis `"show_last_deployed": { "enabled": false, "rollout": 0 }` (domyślnie wyłączony). |
 | `config/flags.test.json` | Wpis `"show_last_deployed": { "enabled": true, "rollout": 100 }` (widoczny w testach). |
-| `test/page.test.js` | Nowe testy TDD: flag on → stopka z datą; flag off → brak stopki; escape daty. |
+| `test/page.test.js` | Nowe testy TDD: flaga on → stopka z datą; flaga off → brak daty; puste `deployedAt` → brak daty; escape daty. |
+| `test/server.test.js` | Nowe testy: brak `config/build.json` albo błędny plik → strona 200 bez daty. |
 
-## Pytania do bramki
+## Doświadczenie
 
-- [właściciel] Czy `config/build.json` ma być gitignorowany i generowany wyłącznie przez skrypt wdrożenia (`npm run build`), czy dopuszczalne jest commitowanie go z datą budowania lokalnego jako placeholdera deweloperskiego? Odpowiedź zmienia zakres TSK-1: wariant A dodaje `config/build.json` do `.gitignore` i wymaga skryptu; wariant B pozwala commitować plik z datą jako placeholder (nie wymaga skryptu wdrożenia).
-- [właściciel] Kto jest właścicielem flagi `show_last_deployed` i podejmuje decyzję o przejściu z etapu `internal` do `100%`? Imię lub rola potrzebna do pola `owner` w `release.yaml` (obecnie: `właściciel produktu` jako placeholder).
+### Przepływy
+
+#### F1 — tor nominalny: odwiedzający widzi datę wdrożenia (flaga ON)
+
+Odwiedzający wchodzi na stronę. Serwer odczytuje flagi; `show_last_deployed` jest włączona. `deployedAt` z
+`config/build.json` jest niepuste. `renderPage` wstawia datę w stopce. Odwiedzający widzi „Ostatnie wdrożenie:
+RRRR-MM-DD”.
+
+#### F2 — flaga wyłączona (tor przed rollout, domyślny)
+
+Odwiedzający wchodzi na stronę. Serwer odczytuje flagi; `show_last_deployed` jest wyłączona. `renderPage`
+renderuje stronę bez daty. Stopka bez daty — tor nominalny przed R1, nie jest stanem błędu.
+
+#### F3 — błąd odczytu `config/build.json`
+
+Odwiedzający wchodzi na stronę. Flaga `show_last_deployed` jest włączona. `config/build.json` jest niedostępny
+lub błędny. Stopka bez daty, strona działa normalnie (HTTP 200), nigdy HTTP 500 (FR-003, DEC-0005).
+
+#### F4 — brak pola `deployedAt` w `build.json`
+
+Odwiedzający wchodzi na stronę. Flaga ON, `config/build.json` wczytany poprawnie, ale brak pola `deployedAt`
+lub wartość pusta. Stopka bez daty, strona działa normalnie (DEC-0005).
+
+### Ramki per wymaganie i stan
+
+| Wymaganie | Ścieżka | Stan | Ramka | Uwagi |
+|---|---|---|---|---|
+| US-1 | Odwiedzający sprawdza aktualność strony | idle | brak: bez Figmy | Istniejąca stopka z „Ostatnie wdrożenie: RRRR-MM-DD” (flaga ON, `deployedAt` niepuste). |
+| US-1 | Odwiedzający sprawdza aktualność strony | success | nie dotyczy | Strona SSR bez asynchronicznej akcji użytkownika; wartość dostarcza stan idle. |
+| US-1 | Odwiedzający sprawdza aktualność strony | server_error | brak: bez Figmy | `config/build.json` niedostępny lub błędny → stopka bez daty, HTTP 200. |
+| US-1 | Odwiedzający sprawdza aktualność strony | empty | brak: bez Figmy | Brak lub puste `deployedAt` → stopka bez daty. |
+
+## Rozstrzygnięcia z bramek
+
+- `config/build.json` gitignorowany, generowany przez skrypt w repo (`npm run build`) przed startem aplikacji, bez
+  commitowania placeholdera; `sdlc deploy` tylko zakłada GitHub Deployment (B2, DEC-0003).
+- Format daty: ISO `RRRR-MM-DD` (B2, DEC-0003).
+- Brak lub błąd `config/build.json` albo puste `deployedAt`: stopka bez daty, nigdy HTTP 500 (B2, DEC-0003;
+  design-review, DEC-0005).
+- Właściciel flagi `show_last_deployed`: dbqm45 (B3, DEC-0004).
+- Plik Figmy: brak (repo próbne, D-F3 otwarta); rozszerzenie istniejącej stopki w `src/page.js` i
+  `public/style.css`, bez nowego komponentu (design-review, DEC-0005).
