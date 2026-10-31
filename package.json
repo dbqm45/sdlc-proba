@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "engines": { "node": ">=20" },
   "scripts": {
+    "build": "node -e \"require('fs').writeFileSync('config/build.json', JSON.stringify({deployedAt:new Date().toISOString().slice(0,10)},null,2)+'\\n')\"",
     "start": "node src/server.js",
     "test": "node --test"
   }
