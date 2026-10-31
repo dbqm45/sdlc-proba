@@ -40,3 +40,14 @@ później (`decision pending`). Nie wymyślaj numerów.
 - dlaczego: decyzja w skrzynce bramek pdi (DEC-0001); uzasadnienie w rejestrze pdi
 - zrodlo: manual
 - szkic: human
+
+## Bramka B3: approved
+- ref: CHG-1/D2
+- id: DEC-0004
+- wyslano: tak
+- kiedy: 2026-10-31
+- kto: pdi
+- rodzaj: gate
+- dlaczego: decyzja w skrzynce bramek pdi (DEC-0004); uzasadnienie w rejestrze pdi
+- zrodlo: manual
+- szkic: human
