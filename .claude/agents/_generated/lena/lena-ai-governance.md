@@ -67,6 +67,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | bezpieczeństwo | jak chronimy system i organizację — inżynieria i architektura bezpieczeństwa, ryzyko, zgodność, ład | `sec-llm-security`, `sec-risk-management` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-lean` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

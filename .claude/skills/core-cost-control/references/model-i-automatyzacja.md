@@ -1,5 +1,6 @@
 # Ocena nowego modelu, kontekst i agenci w automatyzacji
-> i dane · 4. Kontekst — MCP, dryf, skan repo · 5. Przykład: decyzja o zmianie modelu
+
+> **Spis treści:** 1. Ocena nowego modelu · 2. Agenci w automatyzacji — koszt · 3. Uwierzytelnienie a rachunek i dane · 4. Kontekst — MCP, dryf, skan repo · 5. Przykład: decyzja o zmianie modelu · 6. Diagnoza przed dźwignią · 7. Raporty kosztów · 8. `ultrathink` i `ultracode` w Claude Code
 
 ## 1. Ocena nowego modelu
 **Jak czytać ranking.** Liczba w tabeli = zestaw zadań + metryka + protokół (harness, limit kroków, liczba prób).
@@ -83,3 +84,46 @@ Decyzja: nowy model tylko dla PR z poziomem triażu „krytyczny” (auth, płat
 reszta zostaje na obecnym. Koszt per PR mierzony 2 tygodnie, potem przegląd decyzji.
 Fałszywy alarm → nowy przypadek w zestawie ewaluacji i doprecyzowane kryteria przeglądu.
 ```
+
+## 6. Diagnoza przed dźwignią
+Zanim zmienisz model, ustal, który problem masz:
+- *kontekstu*: te same pliki czytane w całości kilka razy, stosunek tokenów wejścia do wyjścia ok. 100:1 i więcej,
+  częste kompaktowanie, niskie trafienia cache mimo stałego promptu, agent co sesję odkrywa, kto jest właścicielem
+  czego → inżynieria kontekstu (SKILL.md §5–6), nie tańszy model;
+- *modelu*: wysoki odsetek porażek klasy zadań mimo dobrego kontekstu, wiele tur do pierwszej poprawnej edycji →
+  zmiana modelu, sprawdzona jak w SKILL.md §8;
+- *pomiaru*: subskrypcja zamiast API, benchmark zamiast produkcji, tokeny szacowane ze znaków → najpierw liczniki
+  dostawcy.
+Cache obniża cenę powtarzanego prefiksu, ale nie zdejmuje treści z okna — gnicie kontekstu zostaje.
+
+Źródło: J. Wąsowski, „Your Claude Code Bill Demystified” (2026-10-09); progi to przykłady autora [niezweryfikowane].
+
+## 7. Raporty kosztów
+- `python3 factory/cost_report.py --days 7` — koszt per agent i model, eskalacje, sygnały `Tier:` i rekomendacje
+  zmiany tieru ról.
+- `python3 factory/cost_report.py --delegation` — koszt wykonawców wg klasy z briefu (hook `log_usage` zapisuje każde
+  wywołanie Agent w `.claude/logs/delegation.jsonl`). Klasa droga przy krótkim raporcie → rób takie zadania sam.
+- `python3 factory/cost_stats.py` (`--period day|week|month`) — tokeny, udział modeli, koszt w USD i PLN (kurs średni
+  NBP), zmiany w gicie i pasmo „tanio / typowo / drogo” względem mediany poprzednich okresów; luki w logach oznacza
+  „dane niepełne”. Przyczyny kosztu etapu i tiery wykonawców ocenia retrospektywa agentów (core-agent-retro).
+
+## 8. `ultrathink` i `ultracode` w Claude Code
+- **`ultrathink`** w treści polecenia prosi o głębsze rozumowanie **w tej jednej turze** i nie zmienia zapisanego
+  effortu sesji. W terminalu słowo może podnieść turę do `xhigh` (wtedy jest podświetlone na tęczowo; Claude Code
+  ≥ 2.1.311). Nie podniesie tury, gdy `CLAUDE_CODE_EFFORT_LEVEL` lub limit `maxEffortLevel`/organizacji jest poniżej
+  `xhigh`, ani na Amazon Bedrock — tam ustawiasz effort. Inne frazy („think hard”) są zwykłym tekstem.
+  Wyłącza je `CLAUDE_CODE_DISABLE_ULTRATHINK`.
+- **`ultracode`** to ustawienie, a nie poziom effortu: Claude orkiestruje **dynamiczne workflow** (wiele agentów)
+  przy zadaniach, które tego wymagają, na bieżącym poziomie effortu. Włączenie: `/effort ultracode` (wyłączenie
+  `/effort ultracode off`), `"ultracode": true` w ustawieniach albo `claude --effort ultracode` — tylko flaga
+  i wartość z Agent SDK ustawiają przy tym effort `xhigh`. Niedostępne, gdy workflow są wyłączone albo model nie
+  obsługuje `xhigh`. Koszt: wiele agentów to wiele osobnych kontekstów (subagenci mają własny cache 5-minutowy),
+  więc włączasz je dla zadań, które opłaca się rozdzielić, a nie na stałe.
+- **Kiedy co:** jedna trudna tura → `ultrathink`; cała trudna sesja → effort ustawiony na starcie; zadanie do
+  rozłożenia na wielu wykonawców → `ultracode` albo jawna delegacja (§2, `rownoleglosc.md`).
+- Zmiana effortu w trakcie sesji: na większości modeli następne zapytanie czyta całą historię bez cache. Na Opus 5.5,
+  Sonnet 5.5, Haiku 5.5 i Fable 5.1 przez API lub subskrypcję cache zostaje (nie na Bedrock, Agent Platform, bramce
+  Claude apps ani przy `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`).
+
+Źródła (sprawdzone 2026-11-01): code.claude.com/docs/en/model-config („ultrathink keyword”, „Ultracode”),
+code.claude.com/docs/en/prompt-caching („Changing effort level”); CHANGELOG anthropics/claude-code do 2.1.316.

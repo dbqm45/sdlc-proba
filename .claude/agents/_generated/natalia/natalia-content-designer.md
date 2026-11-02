@@ -60,6 +60,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-i18n` |
 | język i redakcja | jak pisać poprawnie i zrozumiale — pisownia, interpunkcja, styl, redakcja | `txt-polish-correctness`, `txt-polish-style` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-lean`, `proc-agile` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

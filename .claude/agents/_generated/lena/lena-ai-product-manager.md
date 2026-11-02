@@ -65,6 +65,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | systemy AI | jak budujemy, oceniamy i nadzorujemy systemy AI — dane, modele, ewaluacje, wdrożenie, ryzyko | `ai-product-management`, `ai-evals` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-product-discovery`, `proc-requirements-shaping`, `proc-project-planning`, `proc-lean` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

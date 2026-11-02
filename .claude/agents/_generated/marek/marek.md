@@ -77,8 +77,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `marek-backend` | Backend Developer | std (sonnet) | endpointy API, logika biznesowa, baza danych, migracje, uwierzytelnianie i autoryzacja. Skille: be-api-design, be-database, be-auth-security, be-messaging-outbox, be-billing-subscriptions, arch-multi-tenancy, eng-i18n, eng-design-patterns, ops-supply-chain-security, eng-codebase-mapping, eng-legacy-dossier, eng-module-depth, eng-algorithms-data-structures, eng-debugging, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, eng-tech-debt-audit, ddd-tactical-design, ddd-context-mapping, lang-java, lang-go, eng-continuous-delivery, proc-lean, proc-team-topologies, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
-| `marek-devops` | DevOps Engineer | std (sonnet) | Docker, Kubernetes, CI/CD, infrastruktura jako kod (Terraform), wydania (canary, GitOps), sekrety i tożsamości maszynowe, łańcuch dostaw. Skille: ops-docker, ops-kubernetes, ops-ci-cd, ops-release-engineering, ops-iac-terraform, ops-observability, ops-supply-chain-security, ops-secrets-identities, core-agent-security, ops-setup-wizard, ops-security-operations, ops-linux-networking, ops-dependency-upgrades, core-agent-instructions, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-repo-readiness, ddd-tactical-design, ddd-context-mapping, lang-java, lang-go, eng-continuous-delivery, proc-lean, proc-team-topologies, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `marek-backend` | Backend Developer | std (sonnet) | endpointy API, logika biznesowa, baza danych, migracje, uwierzytelnianie i autoryzacja. Skille: be-api-design, be-database, be-auth-security, be-messaging-outbox, be-billing-subscriptions, arch-multi-tenancy, eng-i18n, eng-design-patterns, ops-supply-chain-security, eng-codebase-mapping, eng-legacy-dossier, eng-module-depth, eng-algorithms-data-structures, eng-debugging, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, eng-tech-debt-audit, ddd-tactical-design, ddd-context-mapping, lang-java, lang-go, eng-continuous-delivery, proc-lean, proc-team-topologies, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `marek-devops` | DevOps Engineer | std (sonnet) | Docker, Kubernetes, CI/CD, infrastruktura jako kod (Terraform), wydania (canary, GitOps), sekrety i tożsamości maszynowe, łańcuch dostaw. Skille: ops-docker, ops-kubernetes, ops-ci-cd, ops-release-engineering, ops-iac-terraform, ops-observability, ops-supply-chain-security, ops-secrets-identities, core-agent-security, ops-setup-wizard, ops-security-operations, ops-linux-networking, ops-dependency-upgrades, core-agent-instructions, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-repo-readiness, ddd-tactical-design, ddd-context-mapping, lang-java, lang-go, eng-continuous-delivery, proc-lean, proc-team-topologies, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -99,6 +99,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | marek-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -148,6 +149,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-i18n`, `eng-design-patterns`, `eng-codebase-mapping`, `eng-legacy-dossier`, `eng-module-depth`, `eng-algorithms-data-structures`, `eng-debugging`, `eng-llm-features`, `eng-local-quality-gates`, `eng-refactor-planning`, `eng-repo-readiness`, `eng-behavior-preserving-refactoring`, `eng-tech-debt-audit`, `eng-continuous-delivery`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-change-review` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-lean`, `proc-team-topologies` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-async-delegation`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver`, `core-agent-security`, `core-agent-instructions` |
 
@@ -191,7 +193,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Commit wg core-git-workflow; decyzje jako ADR.
 
 ## Skille wspólne
-`core-git-workflow`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-git-workflow`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

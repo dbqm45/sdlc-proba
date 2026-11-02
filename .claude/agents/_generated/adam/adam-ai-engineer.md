@@ -81,6 +81,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | operacje | jak budujemy, wdrażamy i obserwujemy | `ops-ai-inference` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-llm-features`, `eng-continuous-delivery`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-spec-first-testing` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-cost-control`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-semver` |
 

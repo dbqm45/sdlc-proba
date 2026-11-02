@@ -66,6 +66,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-codebase-mapping`, `eng-legacy-dossier`, `eng-project-reconstruction`, `eng-tech-debt-audit`, `eng-code-audit`, `eng-module-depth`, `eng-algorithms-data-structures`, `eng-llm-features`, `eng-repo-readiness`, `eng-refactor-planning`, `eng-continuous-delivery`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-change-review` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-team-topologies`, `proc-lean`, `proc-project-planning` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-source-research`, `core-delivery-lifecycle`, `core-agent-instructions`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

@@ -73,8 +73,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `kasia-qa-analyst` | Projektant testów (clean-room) | std (sonnet) | projektowanie przypadków testowych i planu testów z wymagań, kryteriów akceptacji i kontraktów — ZANIM powstanie lub bez patrzenia na implementację; karty sesji eksploracyjnych, scenariusze UAT. Skille: qa-spec-first-testing, qa-test-design, qa-exploratory-manual, proc-issue-triage, lang-typescript, lang-javascript, tool-playwright, tool-vitest, tool-jest, tool-pytest, core-git-workflow, core-conventional-commits, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, lang-python |
-| `kasia-qa-automation` | Tester automatyzujący | std (sonnet) | automatyzacja przypadków testowych (jednostkowe, komponentowe, API, e2e), zestawy regresji i CI, niestabilne testy, testy mutacyjne, eksploracja przez przeglądarkę, zgłaszanie defektów. Skille: qa-spec-first-testing, qa-regression, eng-testing, qa-performance-testing, qa-fuzzing, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, lang-typescript, lang-javascript, tool-playwright, tool-vitest, tool-jest, tool-pytest, core-git-workflow, core-conventional-commits, pdi-decisions, qa-test-design, eng-behavior-preserving-refactoring, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, lang-python |
+| `kasia-qa-analyst` | Projektant testów (clean-room) | std (sonnet) | projektowanie przypadków testowych i planu testów z wymagań, kryteriów akceptacji i kontraktów — ZANIM powstanie lub bez patrzenia na implementację; karty sesji eksploracyjnych, scenariusze UAT. Skille: qa-spec-first-testing, qa-test-design, qa-exploratory-manual, proc-issue-triage, lang-typescript, lang-javascript, tool-playwright, tool-vitest, tool-jest, tool-pytest, core-git-workflow, core-conventional-commits, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, lang-python |
+| `kasia-qa-automation` | Tester automatyzujący | std (sonnet) | automatyzacja przypadków testowych (jednostkowe, komponentowe, API, e2e), zestawy regresji i CI, niestabilne testy, testy mutacyjne, eksploracja przez przeglądarkę, zgłaszanie defektów. Skille: qa-spec-first-testing, qa-regression, eng-testing, qa-performance-testing, qa-fuzzing, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, lang-typescript, lang-javascript, tool-playwright, tool-vitest, tool-jest, tool-pytest, core-git-workflow, core-conventional-commits, pdi-decisions, docs-tech-writing, qa-test-design, eng-behavior-preserving-refactoring, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, lang-python |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -95,6 +95,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | kasia-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -141,6 +142,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-design-principles`, `eng-testing`, `eng-llm-features`, `eng-local-quality-gates`, `eng-behavior-preserving-refactoring` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-spec-first-testing`, `qa-test-design`, `qa-exploratory-manual`, `qa-regression`, `qa-performance-testing`, `qa-fuzzing`, `qa-change-review` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-issue-triage` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-git-workflow`, `core-conventional-commits`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver`, `core-async-delegation` |
 
@@ -189,7 +191,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Po automatyzacji logiki krytycznej: test mutacyjny (Stryker) i przegląd przeżyłych mutantów.
 
 ## Skille wspólne
-`core-git-workflow`, `core-conventional-commits`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-git-workflow`, `core-conventional-commits`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

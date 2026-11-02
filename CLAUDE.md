@@ -3,7 +3,7 @@
 <!-- Ten plik ładuje się do KAŻDEGO agenta i subagenta — trzymaj go krótkim (koszt tokenów). -->
 
 ### Komendy
-- Test: `npm test` (node:test) · Start: `npm start` (`APP_ENV=test|prod`, `PORT`) · Lint, typecheck, build: brak (Node bez zależności i bez kroku budowania, decyzja DL4 w pdi)
+- Test: `npm test` · Lint: `npm run lint` · Typecheck: `npm run typecheck` · Build: `npm run build`
   (dostosuj do swojego projektu — wykonawcy używają ich do weryfikacji)
 
 ### Stack

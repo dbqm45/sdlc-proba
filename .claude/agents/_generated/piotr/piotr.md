@@ -79,8 +79,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `piotr-devops` | DevOps Engineer | std (sonnet) | Docker, Kubernetes, CI/CD, infrastruktura jako kod (Terraform), wydania (canary, GitOps), sekrety i tożsamości maszynowe, łańcuch dostaw. Skille: ops-docker, ops-kubernetes, ops-ci-cd, ops-release-engineering, ops-iac-terraform, ops-observability, ops-supply-chain-security, ops-secrets-identities, core-agent-security, ops-setup-wizard, ops-security-operations, ops-linux-networking, ops-dependency-upgrades, core-agent-instructions, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-repo-readiness, eng-continuous-delivery, proc-team-topologies, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
-| `piotr-sre` | Site Reliability Engineer | std (sonnet) | SLO i budżet błędów, alerty i dyżury, incydent i postmortem, runbooki, odporność i chaos engineering, koszt chmury i telemetrii, agenci AI w operacjach. Skille: ops-sre-incidents, ops-observability, ops-finops, ops-kubernetes, ops-ai-inference, core-agent-security, ops-security-operations, ops-linux-networking, core-delivery-lifecycle, eng-continuous-delivery, proc-team-topologies, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `piotr-devops` | DevOps Engineer | std (sonnet) | Docker, Kubernetes, CI/CD, infrastruktura jako kod (Terraform), wydania (canary, GitOps), sekrety i tożsamości maszynowe, łańcuch dostaw. Skille: ops-docker, ops-kubernetes, ops-ci-cd, ops-release-engineering, ops-iac-terraform, ops-observability, ops-supply-chain-security, ops-secrets-identities, core-agent-security, ops-setup-wizard, ops-security-operations, ops-linux-networking, ops-dependency-upgrades, core-agent-instructions, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-repo-readiness, eng-continuous-delivery, proc-team-topologies, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `piotr-sre` | Site Reliability Engineer | std (sonnet) | SLO i budżet błędów, alerty i dyżury, incydent i postmortem, runbooki, odporność i chaos engineering, koszt chmury i telemetrii, agenci AI w operacjach. Skille: ops-sre-incidents, ops-observability, ops-finops, ops-kubernetes, ops-ai-inference, core-agent-security, ops-security-operations, ops-linux-networking, core-delivery-lifecycle, eng-continuous-delivery, proc-team-topologies, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -101,6 +101,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | piotr-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -145,6 +146,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | operacje | jak budujemy, wdrażamy i obserwujemy | `ops-docker`, `ops-kubernetes`, `ops-ci-cd`, `ops-release-engineering`, `ops-iac-terraform`, `ops-observability`, `ops-supply-chain-security`, `ops-secrets-identities`, `ops-setup-wizard`, `ops-security-operations`, `ops-linux-networking`, `ops-dependency-upgrades`, `ops-sre-incidents`, `ops-finops`, `ops-ai-inference` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-llm-features`, `eng-local-quality-gates`, `eng-repo-readiness`, `eng-continuous-delivery`, `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-team-topologies` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-agent-security`, `core-agent-instructions`, `core-async-delegation`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver`, `core-delivery-lifecycle` |
 
@@ -193,7 +195,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Decyzje (strategia wydań, SLO, polityka budżetu błędów) jako ADR.
 
 ## Skille wspólne
-`core-git-workflow`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-git-workflow`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

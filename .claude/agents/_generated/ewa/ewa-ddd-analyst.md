@@ -64,6 +64,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | metoda i domena | CO modelujemy i jakimi pojęciami — niezależnie od technologii | `ddd-event-storming`, `ddd-facilitation`, `ddd-deep-modeling`, `ddd-strategic-analysis`, `ddd-context-mapping`, `ddd-tactical-design`, `ddd-archetypes`, `ddd-discovery-intake`, `ddd-algorithm-recognition`, `ddd-connascence-analysis`, `ddd-model-stress-test`, `ddd-legacy-modernization`, `ddd-es-simulation` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-project-reconstruction`, `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-requirements-shaping`, `proc-agile`, `proc-lean`, `proc-safe`, `proc-team-topologies` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

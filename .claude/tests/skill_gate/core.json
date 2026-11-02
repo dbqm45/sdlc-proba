@@ -1,51 +1,51 @@
 {
  "core-agent-instructions": {
-  "fingerprint": "0b9df94a46d50794",
-  "offline": "2026-10-22"
+  "fingerprint": "0df7e0f0f71f8f00",
+  "offline": "2026-11-01"
  },
  "core-agent-retro": {
-  "fingerprint": "ec88dda3e151ad6e",
-  "offline": "2026-10-22"
+  "fingerprint": "7ec2ff7a6bf891ee",
+  "offline": "2026-11-01"
  },
  "core-agent-security": {
-  "fingerprint": "46dd6e8be3158491",
-  "offline": "2026-10-22"
+  "fingerprint": "673e2492e27a475c",
+  "offline": "2026-11-01"
  },
  "core-async-delegation": {
-  "fingerprint": "993bd042111d5352",
-  "offline": "2026-10-20"
+  "fingerprint": "e4a34890da1e5149",
+  "offline": "2026-11-01"
  },
  "core-conventional-commits": {
   "fingerprint": "738a77fde2a8705f",
   "offline": "2026-10-26"
  },
  "core-cost-control": {
-  "fingerprint": "c040f411c71e17a7",
-  "offline": "2026-10-22"
+  "fingerprint": "c48d2d59b647fdf3",
+  "offline": "2026-11-01"
  },
  "core-delivery-lifecycle": {
-  "fingerprint": "3f4f635387834cb3",
-  "offline": "2026-10-25"
+  "fingerprint": "97cb7fba0730c6eb",
+  "offline": "2026-11-01"
  },
  "core-factory-update": {
   "fingerprint": "7b23d1f504b15374",
   "offline": "2026-10-20"
  },
  "core-git-workflow": {
-  "fingerprint": "74701d5e392fc65b",
-  "offline": "2026-10-26"
+  "fingerprint": "99b6cc6e3333f3f5",
+  "offline": "2026-11-01"
  },
  "core-grounding": {
-  "fingerprint": "55d6d14a13e0f9db",
-  "offline": "2026-10-30"
+  "fingerprint": "c59653bd4732c077",
+  "offline": "2026-11-01"
  },
  "core-knowledge": {
-  "fingerprint": "2821d1b4259bd7d6",
-  "offline": "2026-10-22"
+  "fingerprint": "8bc15174a285d3f2",
+  "offline": "2026-11-01"
  },
  "core-plan-interview": {
-  "fingerprint": "14c6b6fccd624749",
-  "offline": "2026-10-22"
+  "fingerprint": "375293c3a4952cd0",
+  "offline": "2026-10-31"
  },
  "core-problem-routing": {
   "fingerprint": "0ec7e569a9035139",
@@ -60,16 +60,16 @@
   "offline": "2026-10-22"
  },
  "core-skill-authoring": {
-  "fingerprint": "68f370ee4454138a",
-  "offline": "2026-10-30"
+  "fingerprint": "5c0a92474fe9312a",
+  "offline": "2026-11-01"
  },
  "core-skill-composition": {
   "fingerprint": "6a97525970e9255d",
   "offline": "2026-10-22"
  },
  "core-source-research": {
-  "fingerprint": "533c8999995eacb9",
-  "offline": "2026-10-22"
+  "fingerprint": "26d6b5ad17a367cc",
+  "offline": "2026-11-01"
  },
  "core-stack-sync": {
   "fingerprint": "fccb14f5025e997c",

@@ -70,6 +70,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | język | JAK wyrazić pojęcia w konkretnym języku | `lang-typescript` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-i18n`, `eng-design-patterns`, `eng-codebase-mapping`, `eng-legacy-dossier`, `eng-algorithms-data-structures`, `eng-debugging`, `eng-local-quality-gates`, `eng-refactor-planning`, `eng-repo-readiness`, `eng-behavior-preserving-refactoring`, `eng-testing`, `eng-clean-code`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-change-review` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-async-delegation`, `core-conventional-commits`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

@@ -70,8 +70,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `nina-frontend` | Frontend Developer | std (sonnet) | interfejs użytkownika, komponenty, stan aplikacji, routing, formularze, dostępność, analiza kodu frontu. Skille: fe-architecture, fe-css, fe-web-platform, fe-technical-seo, eng-i18n, eng-design-patterns, eng-codebase-mapping, eng-legacy-dossier, eng-algorithms-data-structures, eng-debugging, qa-change-review, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, ddd-tactical-design, fw-nextjs, fw-react, lang-typescript, lang-python, tool-vitest, tool-playwright, tool-pytest, eng-testing, be-api-design, be-auth-security, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
-| `nina-backend` | Backend Developer | std (sonnet) | endpointy API, logika biznesowa, baza danych, migracje, uwierzytelnianie i autoryzacja. Skille: be-api-design, be-database, be-auth-security, be-messaging-outbox, be-billing-subscriptions, arch-multi-tenancy, eng-i18n, eng-design-patterns, ops-supply-chain-security, eng-codebase-mapping, eng-legacy-dossier, eng-module-depth, eng-algorithms-data-structures, eng-debugging, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, eng-tech-debt-audit, ddd-tactical-design, fw-nextjs, fw-react, lang-typescript, lang-python, tool-vitest, tool-playwright, tool-pytest, eng-testing, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, fe-web-platform |
+| `nina-frontend` | Frontend Developer | std (sonnet) | interfejs użytkownika, komponenty, stan aplikacji, routing, formularze, dostępność, analiza kodu frontu. Skille: fe-architecture, fe-css, fe-web-platform, fe-technical-seo, eng-i18n, eng-design-patterns, eng-codebase-mapping, eng-legacy-dossier, eng-algorithms-data-structures, eng-debugging, qa-change-review, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, ddd-tactical-design, fw-nextjs, fw-react, lang-typescript, lang-python, tool-vitest, tool-playwright, tool-pytest, eng-testing, be-api-design, be-auth-security, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `nina-backend` | Backend Developer | std (sonnet) | endpointy API, logika biznesowa, baza danych, migracje, uwierzytelnianie i autoryzacja. Skille: be-api-design, be-database, be-auth-security, be-messaging-outbox, be-billing-subscriptions, arch-multi-tenancy, eng-i18n, eng-design-patterns, ops-supply-chain-security, eng-codebase-mapping, eng-legacy-dossier, eng-module-depth, eng-algorithms-data-structures, eng-debugging, qa-change-review, eng-llm-features, core-async-delegation, eng-local-quality-gates, eng-refactor-planning, eng-repo-readiness, eng-behavior-preserving-refactoring, eng-tech-debt-audit, ddd-tactical-design, fw-nextjs, fw-react, lang-typescript, lang-python, tool-vitest, tool-playwright, tool-pytest, eng-testing, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles, fe-web-platform |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -92,6 +92,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | nina-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -143,6 +144,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | narzędzia | czym budujemy i jak organizujemy repozytorium (monorepo, build) | `tool-vitest`, `tool-playwright`, `tool-pytest` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-i18n`, `eng-design-patterns`, `eng-codebase-mapping`, `eng-legacy-dossier`, `eng-algorithms-data-structures`, `eng-debugging`, `eng-local-quality-gates`, `eng-refactor-planning`, `eng-repo-readiness`, `eng-behavior-preserving-refactoring`, `eng-testing`, `eng-design-principles`, `eng-module-depth`, `eng-llm-features`, `eng-tech-debt-audit` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-change-review` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-async-delegation`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 
@@ -187,7 +189,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Po zakończonej i zweryfikowanej zmianie commit wg core-git-workflow.
 
 ## Skille wspólne
-`core-git-workflow`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-git-workflow`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

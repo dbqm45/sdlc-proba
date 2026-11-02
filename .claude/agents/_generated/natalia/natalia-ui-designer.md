@@ -60,6 +60,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | doświadczenie użytkownika | kogo i po co projektujemy — badania, treść, wygląd, dostępność i usługa, zanim powstanie interfejs | `ux-visual-design`, `ux-design-systems`, `ux-feature-design`, `ux-design-leadership` |
 | warstwa UI | jakie zasady obowiązują w interfejsie użytkownika — w każdym frameworku | `fe-css` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-lean`, `proc-agile` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

@@ -10,3 +10,15 @@
 | Architektura i stack | [Projekt zmiany CHG-1](changes/CHG-1/design.md) | proposed | 2 | natalia | 2026-10-31 |  |
 | Plan | [Decyzje zmiany CHG-1](changes/CHG-1/decisions.md) | draft | 1 | pdi | 2026-10-31 |  |
 | Plan | [Plan zmiany CHG-1](changes/CHG-1/plan.md) | proposed | 1 | tomasz | 2026-10-30 |  |
+
+## Praca w toku
+
+| Zadanie | Status | Aktualizacja | Następna czynność |
+|---|---|---|---|
+| [CHG-1: ocena skutku R1 — zamknięcie zmiany](wip/chg-1-ocena-skutku-r1-zamkniecie-zmiany.md) | active | 2026-10-31 20:22 |  |
+
+## Ostatnie zdarzenia
+
+| Kiedy | Kto | Faza | Zdarzenie |
+|---|---|---|---|
+| 2026-10-31 20:22 | nieznany | meta | Start pracy w toku: CHG-1: ocena skutku R1 — zamknięcie zmiany (docs/project/wip/chg-1-ocena-skutku-r1-zamkniecie-zmiany.md) |

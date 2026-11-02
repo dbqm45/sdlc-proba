@@ -166,6 +166,32 @@
           ["--subject", "jedn\\w+ strategi\\w+", "ochron\\w+ gałęzi", "branch protection", "scala człowiek", "człowiek scala"]
         ]
       }
+    },
+    {
+      "id": "chronione-testy-akceptacyjne-ci",
+      "expect": "trigger",
+      "prompt": "Agent AI czasem „naprawia” czerwone testy akceptacyjne, zmieniając scenariusze Gherkin razem z kodem. Dodaliśmy katalog features/ do CODEOWNERS i myślimy, że to wystarczy. Wystarczy? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["ochron\\w+ gałęzi", "branch protection", "Require review from Code Owners", "reguł\\w+ gałęzi", "ruleset"],
+          ["osobn\\w+ PR", "oddzieln\\w+ PR", "jednocześnie (kod i|scenariusz)", "oba naraz", "zmienia oba"],
+          ["wymagan\\w+ (check|kontrol)", "required check", "CI odrzuca", "sprawdzeni\\w+ w CI"],
+          ["step definition", "definicj\\w+ kroków", "krok\\w+", "adapter\\w*"]
+        ]
+      }
+    },
+    {
+      "id": "worktree-czego-nie-izoluje",
+      "expect": "trigger",
+      "prompt": "Puszczam trzech agentów równolegle w trzech git worktree tego samego repo. Testy losowo padają, a raz agent zgłosił błąd z index.lock. Co worktree izoluje, a czego nie? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["port\\w*"],
+          ["baz\\w+", "migrac\\w+"],
+          ["node_modules", "\\.env", "zależnoś\\w+", "świeży\\w* checkout"],
+          ["index\\.lock", "ta sama gałąź", "sprząt\\w+", "limit\\w*", "worktree remove"]
+        ]
+      }
     }
   ]
 }

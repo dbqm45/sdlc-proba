@@ -73,6 +73,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | operacje | jak budujemy, wdrażamy i obserwujemy | `ops-cloud-landing-zones`, `ops-cloud-migration`, `ops-multi-region-resilience`, `ops-platform-engineering`, `ops-iac-terraform`, `ops-kubernetes`, `ops-finops`, `ops-sre-incidents`, `ops-observability`, `ops-release-engineering` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-continuous-delivery`, `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-team-topologies` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

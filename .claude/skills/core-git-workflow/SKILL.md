@@ -4,7 +4,7 @@ description: Użyj przy pracy z gitem — gałęzie, commity, pull requesty i ic
 metadata:
   przeglad: "2027-10-10"
   katalog: "Użyj przy pracy z gitem — gałęzie, przygotowanie commitów, pull requesty, przegląd PR (także przez AI: REVIEW.md, claude-code-action, rozdział obowiązków, ochrona gałęzi), konflikty, operacje niebezpieczne. Nie do formatu commit message (core-conventional-commits) ani pipeline'ów CI (skill CI/CD, pack-it)."
-  slowa: "worktree, równolegle dwóch agentów, zmiana kontraktu między sesjami, powiadom drugą sesję, commit fazy, przegląd AI w CI, werdykt przeglądu, skip ci, pull request, PR, code review, przegląd kodu, review przez AI, Claude przegląda PR, REVIEW.md, claude-code-action, ai-review.yml, ai_review.py, workflow przeglądu AI, ochrona gałęzi, branch protection, konflikt, rebase, merge, stos PR, stacked PR, rebase --onto, squash merge, strategia scalania, gh pr merge, zmiana bazy PR"
+  slowa: "worktree, równolegle dwóch agentów, zmiana kontraktu między sesjami, powiadom drugą sesję, commit fazy, przegląd AI w CI, werdykt przeglądu, skip ci, pull request, PR, code review, przegląd kodu, review przez AI, Claude przegląda PR, REVIEW.md, claude-code-action, ai-review.yml, ai_review.py, workflow przeglądu AI, ochrona gałęzi, branch protection, konflikt, rebase, merge, stos PR, stacked PR, rebase --onto, squash merge, strategia scalania, gh pr merge, zmiana bazy PR, CODEOWNERS, ochrona gałęzi, chronione testy akceptacyjne, agent zmienia scenariusze Gherkin, agent naprawia testy zmieniając je, wymagany check w CI"
 ---
 
 # Git workflow
@@ -55,7 +55,11 @@ metadata:
 - Która sesja czeka na decyzję: `claude agents` (widok agentów, research preview) pokazuje grupę „Needs input”
   (sprawdzone 2026-10-18).
 - Worktree izoluje pliki i gałąź, **nie środowisko**: osobny port serwera deweloperskiego, osobna lokalna baza
-  (albo schemat), osobny sandbox usług płatności i kolejek.
+  (albo schemat) i migracje, osobny sandbox usług płatności i kolejek, osobny cache. Świeży worktree nie ma
+  `node_modules` ani `.env` — instalacja i konfiguracja to krok startowy. Operacje gita na wspólnym repozytorium
+  potrafią zderzyć się na `.git/index.lock`; ta sama gałąź nie może być w dwóch worktree. Zadań dotykających tych
+  samych portów, baz lub plików nie puszczasz równolegle; liczbę worktree ograniczasz i sprzątasz zapomniane
+  (`git worktree list`, `git worktree prune`) — koszt dysku rośnie z zależnościami.
 - Zmiana z decyzjami w trakcie → interaktywnie, faza po fazie; zmiana z zamkniętym zakresem i mierzalnym końcem →
   `/goal` z limitem tur (core-delivery-lifecycle). Każda zmiana → przegląd → osobny PR.
 - Drobne usprawnienia odkryte w trakcie dopisz do planu jako osobną pozycję zamiast rozszerzać bieżącą zmianę.
@@ -70,6 +74,12 @@ metadata:
 Tytuł jak commit. Opis: **Co** (1–3 punkty), **Dlaczego**, **Jak przetestowano**, **Ryzyka/rollback**.
 Mały PR (jedna zmiana, kilkaset linii) przegląda się szybciej i dokładniej niż duży; duży dziel na kolejne PR-y.
 Odwołaj się do planu kroku i wymagań (`docs/project/`), żeby przeglądający sprawdził zgodność z zamiarem.
+
+**Chronione testy akceptacyjne egzekwuje CI, nie prompt.** CODEOWNERS tylko wskazuje recenzentów; wymuszenie daje
+ochrona gałęzi („Require review from Code Owners”) i wymagany check. Zmiana scenariuszy idzie w osobnym PR niż kod —
+check w CI odrzuca PR, który zmienia oba. Liczba chronionych testów nie spada (alarm pomocniczy: asercję da się
+osłabić bez zmiany liczby). Zmiany w definicjach kroków (step definitions, adaptery) też przechodzą przegląd, bo
+scenariusz można „zazielenić” w adapterze.
 
 ## Przegląd PR — także przez AI
 - **Pierwszy przegląd może robić agent**, drugi i decydujący — człowiek. Człowiek skupia się na zachowaniu

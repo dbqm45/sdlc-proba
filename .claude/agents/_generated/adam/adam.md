@@ -79,8 +79,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `adam-ai-engineer` | AI / LLM Engineer | std (sonnet) | funkcja z LLM w produkcie, RAG i wyszukiwanie semantyczne, agent i narzędzia, MCP, prompty i ich wersje, ewaluacje (evale), sędzia LLM, guardrails, fine-tuning i destylacja, kwantyzacja, koszt i latencja modelu. Skille: ai-evals, ai-prompt-engineering, ai-rag, ai-agents, ai-mcp-server, ai-fine-tuning, ai-model-optimization, eng-llm-features, ops-ai-inference, core-cost-control, qa-spec-first-testing, eng-continuous-delivery, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-semver, eng-design-principles |
-| `adam-ml-engineer` | ML / MLOps Engineer | std (sonnet) | pipeline treningowy, śledzenie eksperymentów, rejestr modeli, feature store, CI/CD dla modeli, wdrożenie modelu (shadow, canary), monitoring driftu, odtwarzalność, kwantyzacja i eksport modelu, serwowanie modeli, LLMOps. Skille: ai-mlops, ai-model-optimization, ai-fine-tuning, ai-evals, ops-ai-inference, ops-kubernetes, ops-docker, ops-ci-cd, data-engineering, eng-continuous-delivery, core-git-workflow, pdi-decisions, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `adam-ai-engineer` | AI / LLM Engineer | std (sonnet) | funkcja z LLM w produkcie, RAG i wyszukiwanie semantyczne, agent i narzędzia, MCP, prompty i ich wersje, ewaluacje (evale), sędzia LLM, guardrails, fine-tuning i destylacja, kwantyzacja, koszt i latencja modelu. Skille: ai-evals, ai-prompt-engineering, ai-rag, ai-agents, ai-mcp-server, ai-fine-tuning, ai-model-optimization, eng-llm-features, ops-ai-inference, core-cost-control, qa-spec-first-testing, eng-continuous-delivery, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-semver, eng-design-principles |
+| `adam-ml-engineer` | ML / MLOps Engineer | std (sonnet) | pipeline treningowy, śledzenie eksperymentów, rejestr modeli, feature store, CI/CD dla modeli, wdrożenie modelu (shadow, canary), monitoring driftu, odtwarzalność, kwantyzacja i eksport modelu, serwowanie modeli, LLMOps. Skille: ai-mlops, ai-model-optimization, ai-fine-tuning, ai-evals, ops-ai-inference, ops-kubernetes, ops-docker, ops-ci-cd, data-engineering, eng-continuous-delivery, core-git-workflow, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-project-record, core-grounding, core-cost-control, core-semver, eng-design-principles |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -101,6 +101,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | adam-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -147,6 +148,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-llm-features`, `eng-continuous-delivery`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-spec-first-testing` |
 | analiza danych | jak odpowiadać na pytania danymi — pozyskanie, czyszczenie, statystyka, wizualizacja, raport | `data-engineering` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-cost-control`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-semver` |
 
@@ -194,7 +196,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Spójną zmianę robisz sam; `adam-ml-engineer` dostaje pipeline i wdrożenie modelu, gdy to osobna część.
 
 ## Skille wspólne
-`core-git-workflow`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-git-workflow`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

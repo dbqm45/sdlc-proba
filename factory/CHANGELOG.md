@@ -3,6 +3,35 @@
 Format: newest version on top. `python3 factory/update.py --check` shows entries newer than the installed version.
 Versions up to 2.45.0 are the history of claude-team-factory, from which this core was extracted.
 
+## [5.56.0] — 2026-11-02
+### Added
+- **pdi:** bring every decision of a change into each phase (PRB-3) (#135)
+- **pdi:** keep GitHub credentials out of the persona step and sandbox it (Z8a) (#137)
+
+## [5.55.1] — 2026-11-02
+### Fixed
+- **pdi:** keep persona output and phase order, move ADR out of design.md (#134)
+
+## [5.55.0] — 2026-11-01
+### Added
+- **mode-pdi:** record answers to ci_for_sdlc findings in decisions.md (#128)
+
+## [5.54.0] — 2026-11-01
+### Added
+- **evals:** measure tuning-holdout gap and fit Jev thresholds (#127)
+
+## [5.53.0] — 2026-11-01
+### Added
+- add agent gate coverage, protocol map and intent failure sections (#123)
+
+## [5.52.1] — 2026-10-31
+### Fixed
+- **mode-pdi:** push talos cut branches and open their PRs in sdlc-phase (#112)
+
+## [5.52.0] — 2026-10-31
+### Added
+- **mode-pdi:** record the gate decision text in decisions.md (#111)
+
 ## [5.51.1] — 2026-10-30
 ### Fixed
 - **core:** make core-grounding discoverable for long documents and worn sessions (#104)

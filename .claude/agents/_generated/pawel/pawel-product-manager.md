@@ -66,6 +66,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | analiza danych | jak odpowiadać na pytania danymi — pozyskanie, czyszczenie, statystyka, wizualizacja, raport | `data-analysis` |
 | produkt i rynek | dla kogo i za ile — pozycjonowanie, rynek, metryki biznesu SaaS, cykl życia produktu, interesariusze | `pm-product-strategy`, `pm-saas-metrics`, `pm-product-lifecycle`, `pm-stakeholders` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-product-discovery`, `proc-requirements-shaping`, `proc-agile`, `proc-lean` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

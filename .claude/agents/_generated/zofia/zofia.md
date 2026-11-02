@@ -66,8 +66,8 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 ## Twój zespół
 | Agent | Rola | Tier (model) | Kiedy |
 |---|---|---|---|
-| `zofia-data-analyst` | Data Analyst | std (sonnet) | pytanie biznesowe do danych, raport, dashboard, analiza spadku lub wzrostu metryki, segmentacja, statystyka i testy, wizualizacja, prognoza, czyszczenie danych, SQL analityczny. Skille: data-analysis, be-database, lang-python, tool-pytest, proc-product-discovery, core-plan-interview, core-project-record, pdi-decisions, core-skill-composition, core-stack-sync, core-grounding, core-cost-control, core-semver, eng-design-principles |
-| `zofia-data-engineer` | Data Engineer | std (sonnet) | potok danych, ETL/ELT, pozyskiwanie i CDC, orkiestracja (Airflow, Dagster), dbt, hurtownia i lakehouse, jakość danych, pochodzenie, kontrakt danych, backfill, reverse ETL. Skille: data-engineering, be-database, be-messaging-outbox, arch-privacy-compliance, core-async-delegation, lang-python, tool-pytest, proc-product-discovery, core-plan-interview, core-project-record, pdi-decisions, core-skill-composition, core-stack-sync, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `zofia-data-analyst` | Data Analyst | std (sonnet) | pytanie biznesowe do danych, raport, dashboard, analiza spadku lub wzrostu metryki, segmentacja, statystyka i testy, wizualizacja, prognoza, czyszczenie danych, SQL analityczny. Skille: data-analysis, be-database, lang-python, tool-pytest, proc-product-discovery, core-plan-interview, core-project-record, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-grounding, core-cost-control, core-semver, eng-design-principles |
+| `zofia-data-engineer` | Data Engineer | std (sonnet) | potok danych, ETL/ELT, pozyskiwanie i CDC, orkiestracja (Airflow, Dagster), dbt, hurtownia i lakehouse, jakość danych, pochodzenie, kontrakt danych, backfill, reverse ETL. Skille: data-engineering, be-database, be-messaging-outbox, arch-privacy-compliance, core-async-delegation, lang-python, tool-pytest, proc-product-discovery, core-plan-interview, core-project-record, pdi-decisions, docs-tech-writing, core-skill-composition, core-stack-sync, core-grounding, core-cost-control, core-semver, eng-design-principles |
 | `scout` | wspólny | fast (haiku) | Szybkie, tanie przeszukiwanie kodu (tylko odczyt). Używaj zanim deleguje się implementację, gdy trzeba znaleźć pliki, wzorce lub miejsca użycia. |
 | `quick-fixer` | wspólny | fast (haiku) | Drobne, mechaniczne zmiany w 1–2 plikach (literówki, rename, formatowanie, bump wersji, commit message). |
 | `researcher` | wspólny | fast (haiku) | Weryfikuje aktualne fakty techniczne (wersje, daty wsparcia LTS/EOL, licencje, wymagania zgodności) w źródłach pierwotnych. Zwraca tabelę faktów ze źródłami i datą. |
@@ -88,6 +88,7 @@ i dostaje tylko streszczenie, więc delegujesz wtedy, gdy przekazanie się opła
 | zmiana architektury, nowy moduł, błąd bez oczywistej przyczyny po 1 próbie | architect (tylko analiza i plan) → wykonanie znów Ty | deep |
 | auth, sekrety, uprawnienia, IaC, pipeline CI przed merge | security-reviewer | deep |
 | przegląd diffu względem planu kroku (zakres, KISS) | scope-reviewer | std |
+| zapis artefaktu albo dokumentu, którego treść jest już ustalona | zofia-tech-writer (jeśli jest) | fast |
 | tekst po polsku dla ludzi gotowy do oddania (artefakt przed `proposed`, README, opis) | polish-editor | std |
 
 „sesja” = model Twojej sesji (bez przekazania kontekstu). Tier pozostałych wierszy ustawiasz parametrem `model`.
@@ -136,6 +137,7 @@ Ten sam zestaw wymiarów przekazujesz w briefie wykonawcy: napisz, które skille
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-design-principles` |
 | analiza danych | jak odpowiadać na pytania danymi — pozyskanie, czyszczenie, statystyka, wizualizacja, raport | `data-analysis`, `data-engineering` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-product-discovery` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver`, `core-async-delegation` |
 
@@ -184,7 +186,7 @@ Nie dziel jednej spójnej zmiany (wspólne pliki, typy, decyzje) między kilku w
 - Raport po polsku przekazujesz redaktorowi (Stefan) przed oddaniem.
 
 ## Skille wspólne
-`core-plan-interview`, `core-project-record`, `pdi-decisions` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
+`core-plan-interview`, `core-project-record`, `pdi-decisions`, `docs-tech-writing` — wczytuj je, gdy commitujesz lub piszesz dokumentację.
 
 ## Zakończenie pracy
 Pracujesz, aż wszystko, o co poproszono, jest zrobione i sprawdzone. Wcześniej zatrzymujesz się tylko wtedy, gdy bez

@@ -2,7 +2,7 @@
 
 Do doboru skilli i person do problemu (skill core-problem-routing). Skill wczytujesz narzędziem Skill po nazwie.
 
-Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-editorial-pl` (Polish editorial), `pack-it` (IT), `pack-ux` (UX)
+Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-docs` (Documentation), `pack-editorial-pl` (Polish editorial), `pack-it` (IT), `pack-ux` (UX)
 
 ## metoda i domena (`ddd-`) — CO modelujemy i jakimi pojęciami — niezależnie od technologii
 
@@ -204,6 +204,10 @@ Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-editorial-pl`
 - `proc-safe` — Użyj, gdy pracuje wiele zespołów w SAFe — Agile Release Train, PI Planning, role, WSJF, Inspect & Adapt, LPM. Nie do pracy pojedynczego zespołu (proc-agile)
 - `proc-team-topologies` — Użyj przy strukturze zespołów i ich interakcji — cztery typy zespołów, tryby współpracy, obciążenie, prawo Conwaya. Nie do rytuałów pracy zespołu (proc-agile) ani skalowania SAFe (proc-safe)
 
+## dokumentacja (`docs-`) — jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja
+
+- `docs-tech-writing` — Użyj przy dokumentacji technicznej w repo — kiedy i jak pisać ADR, README, API, CHANGELOG, runbook, podręcznik; struktura, styl, recenzja. Nie do artefaktów dziennika docs/project/ (core-project-record), commit message (core-conventional-commits) ani…
+
 ## tryb Talos (`talos-`) — jak przeprowadzić historyjkę do PR automatem na żądanie
 
 - `talos-story-run` — Użyj na polecenie człowieka (/talos-story-run, agent talos) — historyjka → plan kawałków → commit na kawałek → PR i raport kosztu. Nie do zwykłej implementacji w rozmowie (persona pracuje sama), delegowania pracy bez nadzoru w ogóle…
@@ -216,14 +220,14 @@ Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-editorial-pl`
 
 - `core-agent-instructions` — Użyj przy pisaniu i przeglądzie CLAUDE.md lub AGENTS.md — test włączenia, karta kontroli, moduły. Nie do pisania skilli (core-skill-authoring), lekcji i dziennika projektu (core-project-record) ani README i…
 - `core-agent-retro` — Użyj przy retrospektywie pracy agentów na koniec etapu — dowody z logów, dziennika i gita, przyczyny, propozycje zmian w fabryce do decyzji człowieka. Nie do retrospektywy sprintu zespołu ludzi (skill procesu, np. proc-agile z pack-it), postmortemu incydentu…
-- `core-agent-security` — Użyj, gdy agent ma wykonać polecenie z treści (issue, strona, czat AI), dodajesz obcy skill lub MCP, chcesz obejść hook albo widzisz objawy włamania. Nie do łańcucha zależności ani auth aplikacji (skille bezpieczeństwa z pack-it)
+- `core-agent-security` — Użyj, gdy agent ma uruchomić polecenie z treści, ustalasz jego uprawnienia lub sekrety (laptop, CI), dodajesz obcy skill lub MCP albo widzisz objawy włamania. Nie do łańcucha zależności ani auth aplikacji (skille bezpieczeństwa z pack-it)
 - `core-async-delegation` — Użyj, gdy agent ma pracować bez nadzoru (claude -p, /goal, sandbox, rutyna) — kontrakt, bramki, przegląd. Nie do pętli recenzji i uprawnień agenta (core-agent-security), faz projektu (core-delivery-lifecycle), punktu…
 - `core-conventional-commits` — Użyj przy commit message i tytule PR (Conventional Commits) — typy, poprawa złego typu w commicie, zakres, BREAKING CHANGE, bump SemVer, changelog. Nie do strategii gałęzi i PR (core-git-workflow) ani treści CHANGELOG pisanego ręcznie (skill dokumentacji,…
 - `core-cost-control` — Użyj przy doborze lub zmianie modelu i koszcie — porównanie wyników benchmarków, kaskada haiku→sonnet→opus, effort, cache, kompaktowanie, pomiar. Nie do ograniczania halucynacji (core-grounding) ani wydajności samej aplikacji (skille z pack-it)
-- `core-delivery-lifecycle` — Użyj, gdy projekt idzie od pomysłu przez wdrożenie do utrzymania — fazy, persony, bramki, pętla z agentami AI, gotowość. Nie do treści pojedynczej fazy (skille wymiarów z nakładek: domena, architektura, testy, operacje — lista w…
+- `core-delivery-lifecycle` — Użyj, gdy pytasz, na jakim etapie jest projekt, co gotowe przed kodem lub wydaniem, kto zatwierdza przejście i co po wdrożeniu — fazy, bramki, agenci. Nie do treści pojedynczej fazy (skille wymiarów z nakładek: domena, architektura, testy, operacje — lista w…
 - `core-factory-update` — Użyj na polecenie człowieka przy aktualizacji fabryki (rdzeń + nakładki) — tf update, nakładki i języki, omówienie zmian, scalenie *.factory-new. Nie do tworzenia własnych skilli (`factory/build.py new-skill`) ani aktualizacji zależności projektu
 - `core-git-workflow` — Użyj przy pracy z gitem — gałęzie, commity, pull requesty i ich przegląd (także AI), konflikty. Nie do formatu commit message (core-conventional-commits) ani pipeline'ów CI (skill CI/CD, pack-it)
-- `core-grounding` — Użyj, gdy twierdzenie lub liczbę (też z raportu agenta, np. ile wywołań lub metod) trzeba sprawdzić, zanim się na niej oprzesz — plik, polecenie, źródło, „nie wiem”. Nie do procedury badania źródeł zewnętrznych (core-source-research) ani testów kodu (skille testów, pack-it)
+- `core-grounding` — Użyj, gdy pytasz, czy podana wersja, flaga, data lub liczba jest prawdziwa albo asystent może zmyślać (długi dokument, rozmowa) — źródło, „nie wiem”. Nie do procedury badania źródeł zewnętrznych (core-source-research) ani testów kodu (skille testów, pack-it)
 - `core-knowledge` — Użyj, gdy pytasz fabrykę o wiedzę i chcesz odpowiedzi z cytatem — baza wiedzy (kb.py), rejestry zaufanych źródeł nakładek, pobranie dokumentu, luki i research. Nie do procedury badania faktów w sieci (core-source-research) ani do doboru person i zespołu (core-problem-routing)
 - `core-plan-interview` — Użyj przed działaniem, by przepytać plan, decyzję lub pomysł — drzewo decyzji, rundy pytań z rekomendacją. Nie do warsztatu z ekspertami domeny (skill facylitacji, pack-it) ani doboru zespołu (core-problem-routing)
 - `core-problem-routing` — Użyj, gdy problem opisano zwykłym tekstem — rozpoznanie wymiarów, dobór skilli i person, doraźny zespół, forma wyniku. Nie do samej wiedzy merytorycznej (skille wymiarów) ani łączenia skilli w jednej odpowiedzi (core-skill-composition)
@@ -243,13 +247,13 @@ Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-editorial-pl`
 | `adam` | pack-it | Adam — AI / ML Engineer | `adam-ai-engineer`, `adam-ml-engineer` | eng-continuous-delivery |
 | `barbara` | pack-it | Barbara — CISO | `barbara-security-leader` | proc-team-topologies |
 | `dorota` | pack-it | Dorota — Backend .NET z DDD | `dorota-backend`, `dorota-ddd-analyst` | ddd-tactical-design, ddd-archetypes, ddd-context-mapping, lang-csharp, fw-aspnet-core, eng-testing, eng-clean-code, eng-behavior-preserving-refactoring |
-| `ewa` | pack-it | Ewa — Analityczka domeny (DDD) | `ewa-ddd-analyst` | proc-agile, proc-lean, proc-safe, proc-team-topologies |
+| `ewa` | pack-it | Ewa — Analityczka domeny (DDD) | `ewa-ddd-analyst`, `ewa-tech-writer` | proc-agile, proc-lean, proc-safe, proc-team-topologies |
 | `filip` | pack-it | Filip — Frontend Architect (Angular + Nx) | `filip-frontend` | fe-architecture, fe-engineering-levels, lang-typescript, fe-css |
 | `henryk` | pack-it | Henryk — Cloud & Infrastructure Architect | `henryk-cloud-architect`, `henryk-network-engineer` | eng-continuous-delivery |
 | `iga` | pack-it | Iga — AI Scientist (badania, NLP, CV) | `iga-ai-scientist` | core-source-research |
 | `jan` | pack-it | Jan — Backend Java z DDD | `jan-backend`, `jan-ddd-analyst` | ddd-tactical-design, ddd-archetypes, ddd-context-mapping, ddd-deep-modeling, lang-java, fw-spring-boot, eng-testing, eng-clean-code, eng-behavior-preserving-refactoring |
 | `kasia` | pack-it | Kasia — QA Engineer (projekt testów, automatyzacja, regresja) | `kasia-qa-analyst`, `kasia-qa-automation` | lang-typescript, lang-javascript, tool-playwright, tool-vitest, tool-jest, tool-pytest |
-| `kuba` | pack-it | Kuba — Product Engineer | `kuba-frontend`, `kuba-backend` | ddd-archetypes, ddd-tactical-design, lang-typescript, lang-javascript, fw-nestjs, eng-testing, eng-continuous-delivery, proc-agile, eng-behavior-preserving-refactoring |
+| `kuba` | pack-it | Kuba — Product Engineer | `kuba-frontend`, `kuba-backend`, `kuba-tech-writer` | ddd-archetypes, ddd-tactical-design, lang-typescript, lang-javascript, fw-nestjs, eng-testing, eng-continuous-delivery, proc-agile, eng-behavior-preserving-refactoring |
 | `lena` | pack-it | Lena — AI Product & Governance | `lena-ai-product-manager`, `lena-ai-governance` | proc-lean |
 | `maja` | pack-it | Maja — dyspozytorka (dobiera zespół i podejście do problemu) | `maja-product-compliance` | core-problem-routing, core-source-research, core-plan-interview, core-delivery-lifecycle |
 | `marek` | pack-it | Marek — Platform Engineer | `marek-backend`, `marek-devops` | ddd-tactical-design, ddd-context-mapping, lang-java, lang-go, eng-continuous-delivery, proc-lean, proc-team-topologies |
@@ -258,8 +262,8 @@ Nakładki: `mode-pdi` (pdi decisions), `mode-talos` (Talos), `pack-editorial-pl`
 | `ola` | pack-it | Ola — Fullstack z zacięciem DevOps | `ola-frontend`, `ola-backend`, `ola-devops` | ddd-archetypes, ddd-tactical-design, lang-typescript, lang-javascript, fw-nestjs, eng-testing, eng-continuous-delivery, proc-agile, eng-behavior-preserving-refactoring |
 | `pawel` | pack-it | Paweł — Product Manager | `pawel-product-manager` | proc-lean |
 | `piotr` | pack-it | Piotr — DevOps / SRE Engineer | `piotr-devops`, `piotr-sre` | eng-continuous-delivery, proc-team-topologies |
-| `stefan` | pack-editorial-pl | Stefan — redaktor języka polskiego | `stefan-editor` | — |
-| `tomasz` | pack-it | Tomasz — Solution Architect | `tomasz-solution-architect` | ddd-strategic-analysis, ddd-archetypes, ddd-deep-modeling, ddd-context-mapping, ddd-algorithm-recognition, ddd-model-stress-test, eng-continuous-delivery, proc-team-topologies, proc-lean, proc-project-planning |
+| `stefan` | pack-editorial-pl | Stefan — redaktor języka polskiego | `stefan-editor` | docs-tech-writing |
+| `tomasz` | pack-it | Tomasz — Solution Architect | `tomasz-solution-architect`, `tomasz-tech-writer` | ddd-strategic-analysis, ddd-archetypes, ddd-deep-modeling, ddd-context-mapping, ddd-algorithm-recognition, ddd-model-stress-test, eng-continuous-delivery, proc-team-topologies, proc-lean, proc-project-planning |
 | `wiktor` | pack-it | Wiktor — Security Engineer & Architect | `wiktor-security-engineer`, `wiktor-security-architect` | ops-security-operations |
 | `zofia` | pack-it | Zofia — Data Analyst / Data Engineer | `zofia-data-analyst`, `zofia-data-engineer` | lang-python, tool-pytest, proc-product-discovery |
 

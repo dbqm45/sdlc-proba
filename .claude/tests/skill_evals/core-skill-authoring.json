@@ -160,6 +160,58 @@
           ]
         ]
       }
+    },
+    {
+      "id": "skill-od-wzorcowego-wyniku",
+      "expect": "trigger",
+      "prompt": "Napisałem skill do pisania PRD jako listę kroków (zbierz kontekst, opisz problem, dodaj wymagania, dodaj metryki). Wyniki są poprawne, ale płaskie i generyczne, a nasz najlepszy PRD z zeszłego kwartału przeszedł przegląd bez pytań. Jak przebudować skill? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["wzorcow\\w+ (wynik|artefakt|PRD|dokument)", "najlepsz\\w+ (PRD|dokument|artefakt)", "od wyniku", "przykład\\w* wynik\\w*"],
+          ["decyzj\\w+", "czego szablon nie", "kolejnoś\\w+ sekcji", "nierówn\\w+ głębi\\w*", "pod czytelnika"],
+          ["pytani\\w+ (przed|na start)", "zada\\w+ pytani\\w+", "co musi być prawdą"],
+          ["scenariusz\\w*", "ewaluacj\\w+"]
+        ]
+      }
+    },
+    {
+      "id": "mniej-tokenow-w-skillach",
+      "expect": "trigger",
+      "prompt": "Nasze skille są długie i sesje szybko zjadają kontekst, a mamy ponad 200 skilli widocznych w każdej sesji. Jak odchudzić skille, nie tracąc tego, co działa? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["no-op", "zdanie po zdaniu", "czy zmienia zachowani\\w+"],
+          ["pozytywn\\w+", "zamiast zakaz\\w+", "zakaz\\w+ wnosi"],
+          ["disable-model-invocation", "rzadko wywoływan\\w+", "opis\\w* skilli", "koszt\\w* opisów"],
+          ["scenariusz\\w*", "bramk\\w+", "ewaluacj\\w+", "references"]
+        ]
+      }
+    },
+    {
+      "id": "przyjecie-zmiany-holdout",
+      "expect": "trigger",
+      "prompt": "Poprawiłem opis skilla i na jego scenariuszach ewaluacji wynik wzrósł z 70% do 95%. Czy mogę uznać, że skill jest lepszy? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "holdout",
+            "zamknięt\\w* zbi\\w*",
+            "odłożon\\w*"
+          ],
+          [
+            "nie pogarsz\\w*",
+            "bez spadku",
+            "nie spad\\w*"
+          ],
+          [
+            "luk\\w*",
+            "dopasow\\w*",
+            "egzamin\\w*",
+            "przeucz\\w*",
+            "zawyż\\w*"
+          ]
+        ]
+      }
     }
   ]
 }

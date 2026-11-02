@@ -60,6 +60,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | metoda i domena | CO modelujemy i jakimi pojęciami — niezależnie od technologii | `ddd-discovery-intake` |
 | doświadczenie użytkownika | kogo i po co projektujemy — badania, treść, wygląd, dostępność i usługa, zanim powstanie interfejs | `ux-feature-design`, `ux-information-architecture`, `ux-design-leadership` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-product-discovery`, `proc-requirements-shaping`, `proc-lean`, `proc-agile` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-plan-interview`, `core-project-record`, `core-skill-composition`, `core-stack-sync`, `core-grounding`, `core-cost-control`, `core-semver` |
 

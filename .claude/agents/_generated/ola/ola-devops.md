@@ -73,6 +73,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | język | JAK wyrazić pojęcia w konkretnym języku | `lang-typescript`, `lang-javascript` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-llm-features`, `eng-local-quality-gates`, `eng-repo-readiness`, `eng-testing`, `eng-continuous-delivery`, `eng-behavior-preserving-refactoring`, `eng-code-audit`, `eng-design-principles` |
 | proces | jak planujemy, współpracujemy i dostarczamy (Agile, Lean, SAFe) | `proc-agile` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-agent-security`, `core-agent-instructions`, `core-async-delegation`, `core-git-workflow`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

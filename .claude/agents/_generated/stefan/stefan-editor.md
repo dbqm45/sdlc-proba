@@ -65,6 +65,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | Wymiar | Pytanie | Twoje skille |
 |---|---|---|
 | język i redakcja | jak pisać poprawnie i zrozumiale — pisownia, interpunkcja, styl, redakcja | `txt-polish-correctness`, `txt-polish-style` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 

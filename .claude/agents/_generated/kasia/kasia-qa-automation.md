@@ -75,6 +75,7 @@ Skille są niezależne — każdy odpowiada na inne pytanie. Przy każdym zadani
 | narzędzia | czym budujemy i jak organizujemy repozytorium (monorepo, build) | `tool-playwright`, `tool-vitest`, `tool-jest`, `tool-pytest` |
 | zasady inżynierskie | jak pisać prosto i dobrze (KISS, YAGNI, SOLID, testy, CD) — ograniczenia i rozstrzyganie sporów | `eng-testing`, `eng-llm-features`, `eng-local-quality-gates`, `eng-behavior-preserving-refactoring`, `eng-design-principles` |
 | jakość i testy | jak projektować, prowadzić i utrzymywać testy tak, by sprawdzały wymagania — niezależnie od narzędzia | `qa-spec-first-testing`, `qa-regression`, `qa-performance-testing`, `qa-fuzzing`, `qa-change-review`, `qa-test-design` |
+| dokumentacja | jak piszemy i utrzymujemy dokumentację techniczną — rodzaje, struktura, styl, recenzja | `docs-tech-writing` |
 | decyzje pdi | jak zapisać decyzję o zmianie w jednym źródle (repo + rejestr pdi) | `pdi-decisions` |
 | praktyki | jak pracujemy (kompozycja skilli, wersje, git, commity, dziennik projektu) | `core-async-delegation`, `core-git-workflow`, `core-conventional-commits`, `core-skill-composition`, `core-stack-sync`, `core-project-record`, `core-grounding`, `core-cost-control`, `core-semver` |
 
