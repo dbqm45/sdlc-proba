@@ -1,0 +1,22 @@
+rules:
+  - id: node-sqlite-sql-from-string
+    message: >-
+      SQL for node:sqlite is built from a string with a value in it. Use a `?` placeholder in a constant
+      statement and pass the value to run/get/all, so input cannot change the query.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      owasp:
+        - "A03:2021 - Injection"
+        - "A05:2025 - Injection"
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: $DB.prepare($A + $B)
+          - pattern: $DB.prepare(`...${$X}...`)
+          - pattern: $DB.exec($A + $B)
+          - pattern: $DB.exec(`...${$X}...`)
+      - pattern-not: $DB.prepare("..." + "...")
+      - pattern-not: $DB.exec("..." + "...")
