@@ -6,6 +6,7 @@ const http = require('node:http');
 const path = require('node:path');
 const { readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
+const { listDeployments } = require('./deployments');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const DEFAULT_BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
@@ -25,10 +26,10 @@ function visitorOf(req) {
 }
 
 /**
- * @param {{ env?: string, configDir?: string, buildFile?: string }} [options]
+ * @param {{ env?: string, configDir?: string, buildFile?: string, deploymentsDb?: string }} [options]
  * @returns {http.Server}
  */
-function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE } = {}) {
+function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE, deploymentsDb } = {}) {
     const { deployedAt = null } = readBuildInfo(buildFile);
     return http.createServer((req, res) => {
         const url = new URL(req.url, 'http://localhost');
@@ -42,6 +43,15 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
         }
         if (url.pathname === '/style.css') {
             res.writeHead(200, { 'content-type': 'text/css; charset=utf-8' }).end(fs.readFileSync(path.join(PUBLIC_DIR, 'style.css')));
+            return;
+        }
+        if (url.pathname === '/deployments') {
+            const target = url.searchParams.get('env');
+            if (!target) {
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: 'env is required' }));
+                return;
+            }
+            res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(target, deploymentsDb)));
             return;
         }
         if (url.pathname !== '/') {

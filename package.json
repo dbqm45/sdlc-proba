@@ -4,7 +4,7 @@
   "private": true,
   "description": "Trial app for the local sdlc run (pdi L5): a static page served by Node with no dependencies, one behaviour behind a flag.",
   "license": "UNLICENSED",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=22.13" },
   "scripts": {
     "build": "node scripts/build-info.js",
     "start": "node src/server.js",
