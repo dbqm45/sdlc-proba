@@ -64,3 +64,38 @@ test('GET /deployments for an unknown environment → 400 naming the known ones'
     assert.match(error, /\btest\b/);
     assert.match(error, /\bprod\b/);
 });
+
+function prodDeployments(n) {
+    return Array.from({ length: n }, (_, i) => ({
+        env: 'prod',
+        sha: `sha${String(i).padStart(2, '0')}`,
+        deployedAt: `2026-10-${String(i + 1).padStart(2, '0')}T10:00:00Z`,
+    }));
+}
+
+test('GET /deployments returns the 20 newest deployments by default', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(25)));
+    const res = await fetch(`${base}/deployments?env=prod`);
+    assert.equal(res.status, 200);
+    const list = await res.json();
+    assert.equal(list.length, 20);
+    assert.deepEqual(list[0], { sha: 'sha24', deployedAt: '2026-10-25T10:00:00Z' });
+    assert.deepEqual(list[19], { sha: 'sha05', deployedAt: '2026-10-06T10:00:00Z' });
+});
+
+test('GET /deployments?limit=3 returns the 3 newest, newest first', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(25)));
+    const res = await fetch(`${base}/deployments?env=prod&limit=3`);
+    assert.equal(res.status, 200);
+    assert.deepEqual((await res.json()).map((d) => d.sha), ['sha24', 'sha23', 'sha22']);
+});
+
+test('GET /deployments with limit outside 1-100 or not an integer → 400', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(3)));
+    for (const limit of ['0', '101', 'abc']) {
+        const res = await fetch(`${base}/deployments?env=prod&limit=${limit}`);
+        assert.equal(res.status, 400, `limit=${limit}`);
+        assert.match(res.headers.get('content-type'), /^application\/json/);
+        assert.match((await res.json()).error, /limit/);
+    }
+});

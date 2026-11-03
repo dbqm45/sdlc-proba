@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const { listDeployments } = require('./deployments');
+const { DEFAULT_LIMIT, MAX_LIMIT, listDeployments } = require('./deployments');
 const { ENVIRONMENTS, readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
@@ -54,7 +54,14 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
                 res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
                 return;
             }
-            res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(deploymentsDb, target)));
+            const rawLimit = url.searchParams.get('limit');
+            const limit = rawLimit === null ? DEFAULT_LIMIT : /^\d+$/.test(rawLimit) ? Number(rawLimit) : NaN;
+            if (!(limit >= 1 && limit <= MAX_LIMIT)) {
+                const error = `limit must be an integer from 1 to ${MAX_LIMIT}`;
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
+                return;
+            }
+            res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(deploymentsDb, target, limit)));
             return;
         }
         if (url.pathname === '/style.css') {
