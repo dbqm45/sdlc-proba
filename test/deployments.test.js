@@ -188,3 +188,32 @@ test('GET /deployments with a broken cursor → 400', async (t) => {
     assert.match(res.headers.get('content-type'), /^application\/json/);
     assert.match((await res.json()).error, /cursor/);
 });
+
+test('GET /deployments accepts the limit bounds 1 and 100', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(3)));
+    const one = await fetch(`${base}/deployments?env=prod&limit=1`);
+    assert.equal(one.status, 200);
+    assert.deepEqual((await one.json()).map((d) => d.sha), ['sha02']);
+    const hundred = await fetch(`${base}/deployments?env=prod&limit=100`);
+    assert.equal(hundred.status, 200);
+    assert.equal((await hundred.json()).length, 3);
+});
+
+test('GET /deployments rejects a limit that is a fraction, negative or in exponent form', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(3)));
+    for (const limit of ['3.5', '-1', '1e2']) {
+        const res = await fetch(`${base}/deployments?env=prod&limit=${limit}`);
+        assert.equal(res.status, 400, `limit=${limit}`);
+        assert.match((await res.json()).error, /limit/);
+    }
+});
+
+test('GET /deployments with both cursor and before → 400', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(5)));
+    const first = await fetch(`${base}/deployments?env=prod&limit=2`);
+    const cursor = new URL(nextLink(first), 'http://x').searchParams.get('cursor');
+    const res = await fetch(`${base}/deployments?env=prod&cursor=${cursor}&before=2026-10-03T10:00:00Z`);
+    assert.equal(res.status, 400);
+    assert.match(res.headers.get('content-type'), /^application\/json/);
+    assert.match((await res.json()).error, /cursor|before/);
+});
