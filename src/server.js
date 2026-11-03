@@ -1,14 +1,17 @@
 // A static page served by Node's own http module, no dependencies (decision DL4). APP_ENV picks the flags file
-// (test or prod, default test); PORT the port (default 8080). GET / is the page, GET /health a JSON check.
+// (test or prod, default test); PORT the port (default 8080). GET / is the page, GET /health a JSON check,
+// GET /deployments?env=<env> the deployments of an environment from DEPLOYMENTS_DB (default config/deployments.db).
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
+const { listDeployments } = require('./deployments');
 const { readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const DEFAULT_BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
+const DEFAULT_DEPLOYMENTS_DB = process.env.DEPLOYMENTS_DB || path.join(__dirname, '..', 'config', 'deployments.db');
 const VISITOR_COOKIE = 'visitor';
 
 function readBuildInfo(file) {
@@ -25,10 +28,10 @@ function visitorOf(req) {
 }
 
 /**
- * @param {{ env?: string, configDir?: string, buildFile?: string }} [options]
+ * @param {{ env?: string, configDir?: string, buildFile?: string, deploymentsDb?: string }} [options]
  * @returns {http.Server}
  */
-function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE } = {}) {
+function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE, deploymentsDb = DEFAULT_DEPLOYMENTS_DB } = {}) {
     const { deployedAt = null } = readBuildInfo(buildFile);
     return http.createServer((req, res) => {
         const url = new URL(req.url, 'http://localhost');
@@ -38,6 +41,15 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
         }
         if (url.pathname === '/health') {
             res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify({ ok: true, env }));
+            return;
+        }
+        if (url.pathname === '/deployments') {
+            const target = url.searchParams.get('env');
+            if (!target) {
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: 'env is required' }));
+                return;
+            }
+            res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(deploymentsDb, target)));
             return;
         }
         if (url.pathname === '/style.css') {
