@@ -6,6 +6,9 @@ const os = require('node:os');
 const path = require('node:path');
 const { DatabaseSync } = require('node:sqlite');
 const { createServer } = require('../src/server');
+const { LIST_SQL } = require('../src/deployments');
+
+const EXPLAIN_LIST_SQL = 'EXPLAIN QUERY PLAN ' + LIST_SQL;   // two code constants, no input
 
 const ROOT = path.join(__dirname, '..');
 
@@ -68,4 +71,29 @@ test('record-deployment with an unknown environment or no commit fails and store
         assert.match(r.stderr, /\S/, `an error message for ${args.join(' ')}`);
     }
     assert.deepEqual(rows(file), []);
+});
+
+test('record-deployment adds the (env, time) index, also to a DB created without it', (t) => {
+    const file = tmpDb(t);
+    const db = new DatabaseSync(file);
+    db.exec('CREATE TABLE deployments (env TEXT NOT NULL, sha TEXT NOT NULL, deployed_at TEXT NOT NULL)');
+    db.close();
+    const r = record(file, 'prod', 'abc1234');
+    assert.equal(r.status, 0, r.stderr);
+    const check = new DatabaseSync(file, { readOnly: true });
+    t.after(() => check.close());
+    const index = check.prepare("SELECT sql FROM sqlite_master WHERE type = 'index' AND tbl_name = 'deployments'").all();
+    assert.equal(index.length, 1, JSON.stringify(index));
+    assert.match(index[0].sql, /\(\s*env\s*,\s*julianday\(deployed_at\)\s*\)/);
+});
+
+test('the deployments list query searches by the index and does not sort separately', (t) => {
+    const file = tmpDb(t);
+    assert.equal(record(file, 'prod', 'abc1234').status, 0);
+    const db = new DatabaseSync(file, { readOnly: true });
+    t.after(() => db.close());
+    const plan = db.prepare(EXPLAIN_LIST_SQL).all('prod', null, null, null, null, null, null, 21)
+        .map((row) => row.detail).join(' | ');
+    assert.match(plan, /USING INDEX/, plan);
+    assert.doesNotMatch(plan, /TEMP B-TREE/, plan);
 });
