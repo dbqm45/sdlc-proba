@@ -5,6 +5,14 @@ const { DatabaseSync } = require('node:sqlite');
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
+// julianday(): deployed_at comes as …:00Z and …:00.000Z, which do not compare correctly as text.
+// The index below has the same expression, so a page is an index range with no separate sort.
+const LIST_SQL = 'SELECT rowid AS id, sha, deployed_at AS deployedAt FROM deployments WHERE env = ? '
+    + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?)) '
+    + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?) '
+    + 'OR (julianday(deployed_at) = julianday(?) AND rowid < ?)) '
+    + 'ORDER BY julianday(deployed_at) DESC, rowid DESC LIMIT ?';
+
 /**
  * One page of an environment's deployments, newest first; ties in time are ordered by rowid.
  *
@@ -20,13 +28,8 @@ function listDeployments(file, env, limit = DEFAULT_LIMIT, { before = null, afte
     if (!fs.existsSync(file)) return { items: [], next: null };
     const db = new DatabaseSync(file, { readOnly: true });
     try {
-        // julianday(): deployed_at comes as …:00Z and …:00.000Z, which do not compare correctly as text
         const rows = db
-            .prepare('SELECT rowid AS id, sha, deployed_at AS deployedAt FROM deployments WHERE env = ? '
-                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?)) '
-                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?) '
-                + 'OR (julianday(deployed_at) = julianday(?) AND rowid < ?)) '
-                + 'ORDER BY julianday(deployed_at) DESC, rowid DESC LIMIT ?')
+            .prepare(LIST_SQL)
             .all(env, before, before, after?.t ?? null, after?.t ?? null, after?.t ?? null, after?.id ?? null, limit + 1);
         const page = rows.slice(0, limit);
         const last = page[page.length - 1];
@@ -51,10 +54,11 @@ function recordDeployment(file, env, sha, at = new Date()) {
     const db = new DatabaseSync(file);
     try {
         db.exec('CREATE TABLE IF NOT EXISTS deployments (env TEXT NOT NULL, sha TEXT NOT NULL, deployed_at TEXT NOT NULL)');
+        db.exec('CREATE INDEX IF NOT EXISTS deployments_env_time ON deployments (env, julianday(deployed_at))');
         db.prepare('INSERT INTO deployments (env, sha, deployed_at) VALUES (?, ?, ?)').run(env, sha, at.toISOString());
     } finally {
         db.close();
     }
 }
 
-module.exports = { DEFAULT_LIMIT, MAX_LIMIT, listDeployments, recordDeployment };
+module.exports = { DEFAULT_LIMIT, MAX_LIMIT, LIST_SQL, listDeployments, recordDeployment };
