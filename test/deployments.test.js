@@ -137,3 +137,54 @@ test('GET /deployments orders and pages by time across …Z and …000Z timestam
     const older = await (await fetch(`${base}/deployments?env=prod&before=2026-10-01T10:00:00.500Z`)).json();
     assert.deepEqual(older.map((d) => d.sha), ['whole']);
 });
+
+function nextLink(res) {
+    const match = /<([^>]+)>;\s*rel="next"/.exec(res.headers.get('link') || '');
+    return match ? match[1] : null;
+}
+
+const SAME_TIME = [
+    { env: 'prod', sha: 'old1', deployedAt: '2026-10-01T10:00:00Z' },
+    { env: 'prod', sha: 'same1', deployedAt: '2026-10-02T10:00:00Z' },
+    { env: 'prod', sha: 'same2', deployedAt: '2026-10-02T10:00:00Z' },
+    { env: 'prod', sha: 'same3', deployedAt: '2026-10-02T10:00:00.000Z' },
+    { env: 'prod', sha: 'new1', deployedAt: '2026-10-03T10:00:00Z' },
+];
+
+test('GET /deployments pages via Link rel="next": every deployment once, newest first, ties included', async (t) => {
+    const base = await start(t, seededDb(t, SAME_TIME));
+    const seen = [];
+    let path = '/deployments?env=prod&limit=2';
+    for (let page = 0; path && page < 10; page += 1) {
+        const res = await fetch(`${base}${path}`);
+        assert.equal(res.status, 200, path);
+        const list = await res.json();
+        assert.ok(list.length <= 2);
+        seen.push(...list.map((d) => d.sha));
+        path = nextLink(res);
+    }
+    assert.equal(path, null, 'the walk ends');
+    assert.equal(seen.length, 5);
+    assert.deepEqual(new Set(seen), new Set(SAME_TIME.map((d) => d.sha)));
+    assert.equal(seen[0], 'new1');
+    assert.equal(seen[4], 'old1');
+});
+
+test('GET /deployments has no next link on the last page', async (t) => {
+    const base = await start(t, seededDb(t, SAME_TIME));
+    const full = await fetch(`${base}/deployments?env=prod&limit=5`);
+    assert.equal((await full.json()).length, 5);
+    assert.equal(nextLink(full), null);
+    const first = await fetch(`${base}/deployments?env=prod&limit=4`);
+    const last = await fetch(`${base}${nextLink(first)}`);
+    assert.deepEqual((await last.json()).map((d) => d.sha), ['old1']);
+    assert.equal(nextLink(last), null);
+});
+
+test('GET /deployments with a broken cursor → 400', async (t) => {
+    const base = await start(t, seededDb(t, SAME_TIME));
+    const res = await fetch(`${base}/deployments?env=prod&cursor=abc`);
+    assert.equal(res.status, 400);
+    assert.match(res.headers.get('content-type'), /^application\/json/);
+    assert.match((await res.json()).error, /cursor/);
+});

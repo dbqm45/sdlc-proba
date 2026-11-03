@@ -15,6 +15,25 @@ const DEFAULT_DEPLOYMENTS_DB = process.env.DEPLOYMENTS_DB || path.join(__dirname
 const VISITOR_COOKIE = 'visitor';
 const ISO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;   // ?before= (UTC)
 
+function isIsoTime(value) {
+    return ISO_TIME.test(value) && !Number.isNaN(Date.parse(value));
+}
+
+/** Page cursor: base64url JSON of the last item's time and rowid. */
+function encodeCursor({ t, id }) {
+    return Buffer.from(JSON.stringify({ t, id })).toString('base64url');
+}
+
+/** @returns {{ t: string, id: number }|undefined} undefined when the cursor is broken */
+function decodeCursor(raw) {
+    try {
+        const { t, id } = JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
+        return typeof t === 'string' && isIsoTime(t) && Number.isInteger(id) && id > 0 ? { t, id } : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
 function readBuildInfo(file) {
     try {
         return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -63,13 +82,26 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
                 return;
             }
             const before = url.searchParams.get('before');
-            if (before !== null && !(ISO_TIME.test(before) && !Number.isNaN(Date.parse(before)))) {
+            if (before !== null && !isIsoTime(before)) {
                 const error = 'before must be an ISO 8601 UTC time, e.g. 2026-11-01T10:00:00Z';
                 res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
                 return;
             }
-            res.writeHead(200, { 'content-type': 'application/json' })
-                .end(JSON.stringify(listDeployments(deploymentsDb, target, limit, before)));
+            const rawCursor = url.searchParams.get('cursor');
+            const after = rawCursor === null ? null : decodeCursor(rawCursor);
+            if (after === undefined || (after && before !== null)) {
+                const error = after ? 'use either cursor or before' : 'cursor is not valid; use the Link rel="next" URL';
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
+                return;
+            }
+            const { items, next } = listDeployments(deploymentsDb, target, limit, { before, after });
+            const headers = { 'content-type': 'application/json' };
+            if (next) {
+                const query = new URLSearchParams({ env: target, limit: String(limit), cursor: encodeCursor(next) });
+                const nextUrl = `/deployments?${query}`;   // URLSearchParams encodes every value
+                headers.link = '<' + nextUrl + '>; rel="next"';   // RFC 8288
+            }
+            res.writeHead(200, headers).end(JSON.stringify(items));
             return;
         }
         if (url.pathname === '/style.css') {
