@@ -31,6 +31,8 @@ import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
+ATTEMPT = re.compile(r"proba-(\d+)")  # katalog próby kawałka z security_scan.py scan --slice
+
 # projekt: katalog z factory/config.yaml nad skryptem (.claude/skills/talos-story-run/scripts/), inaczej bieżący
 ROOT = next((p for p in Path(__file__).resolve().parents if (p / "factory" / "config.yaml").is_file()), Path.cwd())
 try:
@@ -216,7 +218,41 @@ def report_md(slug: str, rep: dict) -> str:
         lines.append(f"| {agent} | {fmt_tokens(t['input'])} | {fmt_tokens(t['output'])} | {fmt_tokens(t['cache_read'])} | "
                      f"{t.get('_cost', 0):.4f} |")
     lines += ["", "## Odłożone do decyzji", "", *(rep.get("parked_items") or ["- brak"])]
+    lines += ["", *(rep.get("security") or ["## Bezpieczeństwo", "", "- brak wyniku skanu (security_scan.py nie uruchomiony)"])]
     return "\n".join(lines) + "\n"
+
+
+def security_section(run_dir: Path) -> list[str]:
+    """Sekcja „Bezpieczeństwo” z summary.md skanów kawałków (security_scan.py --out <przebieg>/security[/K<n>]);
+    każda próba kawałka (K<n>/proba-<k>/) pod nagłówkiem kawałka, w kolejności prób."""
+    sec = run_dir / "security"
+
+    def key(f: Path):
+        rel = f.parent.relative_to(sec)
+        m = ATTEMPT.fullmatch(rel.name)
+        group = rel.parent if m else rel
+        return [(int(p[1:]) if re.fullmatch(r"K\d+", p) else 0, p) for p in group.parts], int(m.group(1)) if m else 0
+
+    found = sorted(sec.glob("**/summary.md"), key=key)
+    if not found:
+        return []
+    lines, last_group = ["## Bezpieczeństwo"], None
+    for f in found:
+        body = f.read_text(encoding="utf-8").splitlines()
+        if body and body[0].startswith("## Bezpieczeństwo"):
+            body = body[1:]
+        rel = f.parent.relative_to(sec)
+        m = ATTEMPT.fullmatch(rel.name)
+        group = (rel.parent if m else rel).as_posix()
+        if group != last_group and group != ".":
+            lines += ["", f"### {group}"]
+        last_group = group
+        if m:
+            lines += ["", f"#### Próba {m.group(1)}"]
+        lines += ["", *body] if body and body[0].strip() else body
+    while lines and not lines[-1].strip():
+        lines.pop()
+    return lines
 
 
 def front_and_body(text: str) -> tuple[str, str]:
@@ -329,7 +365,8 @@ def cmd_finish(run_dir: Path, session: str | None, as_json: bool, project: Path,
            "requests": data["requests"], "model_ids": data["model_ids"], "models": data["models"],
            "agents": data["agents"],
            "cost_usd": round(sum(t.get("_cost", 0.0) for t in data["models"].values()), 9),
-           "plan": plan_progress(run_dir), "parked": parked_count(run_dir), "parked_items": parked_items(run_dir)}
+           "plan": plan_progress(run_dir), "parked": parked_count(run_dir), "parked_items": parked_items(run_dir),
+           "security": security_section(run_dir)}
     if status:   # kontrola budżetu po kawałku: jedna linia, bez zapisu raportu
         print(f"koszt: {rep['cost_usd']:.4f} USD · czas: {rep['duration_s'] // 60} min · plan: "
               f"{rep['plan']['done']}/{rep['plan']['total']} · odłożone: {rep['parked']}")
