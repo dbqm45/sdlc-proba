@@ -24,4 +24,22 @@ function listDeployments(file, env, limit = DEFAULT_LIMIT) {
     }
 }
 
-module.exports = { DEFAULT_LIMIT, MAX_LIMIT, listDeployments };
+/**
+ * Records one deployment; creates the file and the `deployments` table when missing.
+ *
+ * @param {string} file SQLite file
+ * @param {string} env
+ * @param {string} sha
+ * @param {Date} [at] deployment time (default: now)
+ */
+function recordDeployment(file, env, sha, at = new Date()) {
+    const db = new DatabaseSync(file);
+    try {
+        db.exec('CREATE TABLE IF NOT EXISTS deployments (env TEXT NOT NULL, sha TEXT NOT NULL, deployed_at TEXT NOT NULL)');
+        db.prepare('INSERT INTO deployments (env, sha, deployed_at) VALUES (?, ?, ?)').run(env, sha, at.toISOString());
+    } finally {
+        db.close();
+    }
+}
+
+module.exports = { DEFAULT_LIMIT, MAX_LIMIT, listDeployments, recordDeployment };
