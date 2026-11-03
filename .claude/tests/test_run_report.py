@@ -143,6 +143,19 @@ def main() -> int:
         md = (run_dir / "report.md").read_text(encoding="utf-8")
         check(md.count("## Bezpieczeństwo") == 1 and "### K2" in md and "r.note src/a.py:3" in md
               and "brak wyniku skanu" not in md, f"R-15: sekcja bezpieczeństwa z wyniku skanu: {md[-400:]}")
+        # każda próba kawałka (security/K<n>/proba-<k>/summary.md): FAIL z ustaleniami, potem PASS — w kolejności prób
+        for k, body in ((1, "Skan: FAIL (blokujące: 1, poniżej progu: 0, błędy skanu: 0).\n\nPoniżej progu: brak.\n\n"
+                            "Blokujące i błędy:\n- node-sqlite-sql-from-string src/deployments.js:14 (CWE-89, warning)\n"),
+                        (2, "Skan: PASS (blokujące: 0, poniżej progu: 0, błędy skanu: 0).\n\nPoniżej progu: brak.\n")):
+            (sec.parent / "K1" / f"proba-{k}").mkdir(parents=True)
+            (sec.parent / "K1" / f"proba-{k}" / "summary.md").write_text("## Bezpieczeństwo\n\n" + body, encoding="utf-8")
+        (sec.parent / "K1" / "feedback.md").write_text("# Skan bezpieczeństwa\n\n- brak blokujących\n", encoding="utf-8")
+        run(["finish", str(run_dir)], proj, cfg)
+        md = (run_dir / "report.md").read_text(encoding="utf-8")
+        i = {k: md.find(k) for k in ("### K1", "#### Próba 1", "node-sqlite-sql-from-string src/deployments.js:14",
+                                     "#### Próba 2", "### K2")}
+        check(all(v >= 0 for v in i.values()) and list(i.values()) == sorted(i.values()) and md.count("## Bezpieczeństwo") == 1
+              and md.count("### K1") == 1 and "Skan: FAIL" in md, f"R-15a: wszystkie próby kawałka w raporcie: {i} {md[-900:]}")
 
         # status: jedna linia do kontroli budżetu po każdym kawałku (mało kontekstu), bez zapisu report.md
         (run_dir / "report.md").unlink()
@@ -182,6 +195,47 @@ def main() -> int:
         check("## Odłożone do decyzji" in text and "placeholderem w repo" in text and "- <" not in text,
               f"R-19: raport w repo ma pozycje z parked.md (PRB-14: parked.md jest poza gitem): {text[-600:]}")
 
+        # sesja uruchomiona w katalogu nadrzędnym (chmura z kilkoma repozytoriami, start z /home/user): transkrypty są
+        # w katalogu projektu przodka, nie repozytorium — finish bez --session znajduje je i mówi, skąd wziął
+        ws = Path(t) / "ws"
+        repo = ws / "repo"
+        rdir = repo / ".claude" / "runs" / "2026-11-03-nested"
+        rdir.mkdir(parents=True)
+        (rdir / "run.json").write_text(json.dumps({"slug": "nested", "started_at": "2026-11-03T10:00:00+00:00"}))
+        (rdir / "plan.md").write_text("# Plan\n- [x] K1 lista\n")
+        (rdir / "parked.md").write_text("# Odłożone\n")
+        cfg2 = Path(t) / "cfg2"
+        ws_slug = re.sub(r"[^A-Za-z0-9]", "-", str(ws.resolve()))
+        write_jsonl(cfg2 / "projects" / ws_slug / "W1.jsonl",
+                    [assistant("2026-11-03T10:01:00Z", "w1", "claude-opus-5-5", i=10, o=20)])
+        r = run(["finish", str(rdir), "--json"], repo, cfg2)
+        try:
+            nested = json.loads(r.stdout)
+        except json.JSONDecodeError:
+            nested = {}
+        check(r.returncode == 0 and nested.get("requests") == 1,
+              f"R-21: transkrypty sesji z katalogu nadrzędnego: {r.returncode} {r.stdout[-300:]} {r.stderr[-300:]}")
+        check(ws_slug in str(nested.get("transcripts", "")), f"R-22: raport mówi, skąd wziął transkrypty: {nested.get('transcripts')}")
+
+        # --session szuka sesji we wszystkich katalogach projektów (identyfikator sesji jest unikalny)
+        other_slug = "-gdzie-indziej"
+        write_jsonl(cfg2 / "projects" / other_slug / "X9.jsonl",
+                    [assistant("2026-11-03T10:02:00Z", "x9", "claude-haiku-5-5", i=5, o=5)])
+        r = run(["finish", str(rdir), "--session", "X9", "--json"], repo, cfg2)
+        try:
+            by_id = json.loads(r.stdout)
+        except json.JSONDecodeError:
+            by_id = {}
+        check(r.returncode == 0 and by_id.get("requests") == 1 and "haiku" in by_id.get("models", {}),
+              f"R-23: --session znajduje sesję w innym katalogu projektu: {r.returncode} {r.stdout[-300:]} {r.stderr[-300:]}")
+
+        # nic nie znaleziono → komunikat z przeszukanymi katalogami i wskazówką, nie zgadywanie
+        r = run(["finish", str(rdir)], repo, Path(t) / "cfg3")
+        out = r.stdout + r.stderr
+        check(r.returncode == 2 and "Traceback" not in r.stderr and ws_slug in out and "--session" in out
+              and "katalogami nadrzędnymi" in out,
+              f"R-24: komunikat wymienia przeszukane katalogi i podpowiada --session: {out[-600:]}")
+
         # brak transkryptów → czytelny komunikat, nie wyjątek
         empty = Path(t) / "inny"
         empty.mkdir()
@@ -190,7 +244,7 @@ def main() -> int:
 
     for f in fails:
         print(f"✗ {f}")
-    print(f"{'✓' if not fails else '✗'} {20 - len(fails)}/20 testów raportu przebiegu")
+    print(f"{'✓' if not fails else '✗'} {24 - len(fails)}/24 testów raportu przebiegu")
     return 1 if fails else 0
 
 
