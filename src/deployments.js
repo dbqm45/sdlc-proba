@@ -9,15 +9,18 @@ const MAX_LIMIT = 100;
  * @param {string} file SQLite file with a `deployments (env, sha, deployed_at)` table
  * @param {string} env
  * @param {number} [limit] newest deployments to return (default 20)
+ * @param {string|null} [before] only deployments older than this ISO 8601 time (a page cursor)
  * @returns {{ sha: string, deployedAt: string }[]} newest first; [] when the file does not exist
  */
-function listDeployments(file, env, limit = DEFAULT_LIMIT) {
+function listDeployments(file, env, limit = DEFAULT_LIMIT, before = null) {
     if (!fs.existsSync(file)) return [];
     const db = new DatabaseSync(file, { readOnly: true });
     try {
         return db
-            .prepare('SELECT sha, deployed_at AS deployedAt FROM deployments WHERE env = ? ORDER BY deployed_at DESC LIMIT ?')
-            .all(env, limit)
+            // julianday(): deployed_at comes as …:00Z and …:00.000Z, which do not compare correctly as text
+            .prepare('SELECT sha, deployed_at AS deployedAt FROM deployments WHERE env = ? '
+                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?)) ORDER BY julianday(deployed_at) DESC LIMIT ?')
+            .all(env, before, before, limit)
             .map(({ sha, deployedAt }) => ({ sha, deployedAt }));
     } finally {
         db.close();
