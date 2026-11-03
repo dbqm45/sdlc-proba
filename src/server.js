@@ -53,7 +53,7 @@ function visitorOf(req) {
  */
 function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFile = DEFAULT_BUILD_FILE, deploymentsDb = DEFAULT_DEPLOYMENTS_DB } = {}) {
     const { deployedAt = null } = readBuildInfo(buildFile);
-    return http.createServer((req, res) => {
+    const handle = (req, res) => {
         const url = new URL(req.url, 'http://localhost');
         if (req.method !== 'GET') {
             res.writeHead(405, { allow: 'GET' }).end();
@@ -117,6 +117,20 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
         const headers = { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'self'" };
         if (visitor.fresh) headers['set-cookie'] = `${VISITOR_COOKIE}=${visitor.id}; Path=/; HttpOnly; SameSite=Lax`;
         res.writeHead(200, headers).end(renderPage({ env, on: (key) => isOn(flags, key, visitor.id), deployedAt }));
+    };
+    // An unexpected error (e.g. a corrupt deployments DB) answers 500 instead of crashing the process;
+    // details go to the server log only, never to the client.
+    return http.createServer((req, res) => {
+        try {
+            handle(req, res);
+        } catch (err) {
+            console.error('%s %s failed:', req.method, req.url, err);   // constant format: the URL is data
+            if (res.headersSent) {
+                res.destroy();
+                return;
+            }
+            res.writeHead(500, { 'content-type': 'application/json' }).end(JSON.stringify({ error: 'internal error' }));
+        }
     });
 }
 
