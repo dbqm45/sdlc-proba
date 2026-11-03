@@ -8,8 +8,6 @@ const { DatabaseSync } = require('node:sqlite');
 const { createServer } = require('../src/server');
 const { LIST_SQL } = require('../src/deployments');
 
-const EXPLAIN_LIST_SQL = 'EXPLAIN QUERY PLAN ' + LIST_SQL;   // two code constants, no input
-
 const ROOT = path.join(__dirname, '..');
 
 function tmpDb(t) {
@@ -92,7 +90,7 @@ test('the deployments list query searches by the index and does not sort separat
     assert.equal(record(file, 'prod', 'abc1234').status, 0);
     const db = new DatabaseSync(file, { readOnly: true });
     t.after(() => db.close());
-    const plan = db.prepare(EXPLAIN_LIST_SQL).all('prod', null, null, null, null, null, null, 21)
+    const plan = db.prepare(`EXPLAIN QUERY PLAN ${LIST_SQL}`).all('prod', null, null, null, null, null, null, 21)
         .map((row) => row.detail).join(' | ');
     assert.match(plan, /USING INDEX/, plan);
     assert.doesNotMatch(plan, /TEMP B-TREE/, plan);

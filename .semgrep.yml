@@ -12,11 +12,23 @@ rules:
         - "A03:2021 - Injection"
         - "A05:2025 - Injection"
       category: security
-    patterns:
-      - pattern-either:
-          - pattern: $DB.prepare($A + $B)
-          - pattern: $DB.prepare(`...${$X}...`)
-          - pattern: $DB.exec($A + $B)
-          - pattern: $DB.exec(`...${$X}...`)
-      - pattern-not: $DB.prepare("..." + "...")
-      - pattern-not: $DB.exec("..." + "...")
+    # Not a value: string literals and UPPER_SNAKE_CASE code constants (e.g. LIST_SQL). Anything else in the
+    # statement (a variable, a call, a property) is a value and makes the finding.
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.prepare(`...${$X}...`)
+              - pattern: $DB.exec(`...${$X}...`)
+          - metavariable-regex:
+              metavariable: $X
+              regex: '^(?![A-Z][A-Z0-9_]*$)'
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.prepare($ARG)
+              - pattern: $DB.exec($ARG)
+          - metavariable-pattern:
+              metavariable: $ARG
+              pattern: $A + $B
+          - metavariable-regex:
+              metavariable: $ARG
+              regex: '^(?!\s*(?:''(?:[^''\\\n]|\\.)*''|"(?:[^"\\\n]|\\.)*"|[A-Z][A-Z0-9_]*)(?:\s*\+\s*(?:''(?:[^''\\\n]|\\.)*''|"(?:[^"\\\n]|\\.)*"|[A-Z][A-Z0-9_]*))*\s*$)'
