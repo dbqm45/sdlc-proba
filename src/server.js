@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const { listDeployments } = require('./deployments');
-const { readFlags, isOn } = require('./flags');
+const { ENVIRONMENTS, readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
@@ -47,6 +47,11 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
             const target = url.searchParams.get('env');
             if (!target) {
                 res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error: 'env is required' }));
+                return;
+            }
+            if (!ENVIRONMENTS.includes(target)) {
+                const error = `Unknown environment ${target}; use ${ENVIRONMENTS.join(' or ')}`;
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
                 return;
             }
             res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(deploymentsDb, target)));

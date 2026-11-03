@@ -42,8 +42,8 @@ test('GET /deployments?env=prod lists only prod deployments, newest first', asyn
 });
 
 test('GET /deployments for an environment without deployments → 200 and []', async (t) => {
-    const base = await start(t, seededDb(t, ROWS));
-    const res = await fetch(`${base}/deployments?env=staging`);
+    const base = await start(t, seededDb(t, ROWS.filter((r) => r.env === 'prod')));
+    const res = await fetch(`${base}/deployments?env=test`);
     assert.equal(res.status, 200);
     assert.deepEqual(await res.json(), []);
 });
@@ -52,4 +52,15 @@ test('GET /deployments without env → 400', async (t) => {
     const base = await start(t, seededDb(t, ROWS));
     const res = await fetch(`${base}/deployments`);
     assert.equal(res.status, 400);
+});
+
+test('GET /deployments for an unknown environment → 400 naming the known ones', async (t) => {
+    const base = await start(t, seededDb(t, ROWS));
+    const res = await fetch(`${base}/deployments?env=staging`);
+    assert.equal(res.status, 400);
+    assert.match(res.headers.get('content-type'), /^application\/json/);
+    const { error } = await res.json();
+    assert.match(error, /staging/);
+    assert.match(error, /\btest\b/);
+    assert.match(error, /\bprod\b/);
 });
