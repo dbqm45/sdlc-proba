@@ -140,6 +140,58 @@
           ]
         ]
       }
+    },
+    {
+      "id": "podwojna-droga-liczby",
+      "expect": "trigger",
+      "prompt": "System AI odpowiada liczbami na pytania biznesowe (model pisze SQL), ale czasem podaje pewnie złe liczby. Jak zaprojektować architekturę, żeby wiedzieć, kiedy odpowiedzi można ufać? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["dwie (niezależne )?drogi", "podwójn\\w+", "drug\\w+ (droga|ścieżk)", "niezależn\\w+ (wylicz|ścieżk|drog)"],
+          ["katalog\\w* metryk", "warstw\\w+ semantyczn\\w+", "definicj\\w+ metryk"],
+          ["zgodnoś\\w+", "rozbieżnoś\\w+", "porówn\\w+ wynik"],
+          ["odmow\\w+", "nie wiem", "niższ\\w+ pewnoś\\w+", "pewnoś\\w+"]
+        ]
+      }
+    },
+    {
+      "id": "obsluga-spraw-progi-autonomii",
+      "expect": "trigger",
+      "prompt": "Chcemy, żeby AI obsługiwało 20 tys. zgłoszeń klientów miesięcznie (zwroty, reklamacje, zmiana danych) i samo wykonywało część spraw w systemach. Jak zaprojektować wdrożenie, żeby nie wypłacało pieniędzy na podstawie pomyłki? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["shadow", "w tle", "równolegle (z|do) ludzi", "tryb\\w* cie\\w+"],
+          ["intencj\\w+", "per (typ|rodzaj) sprawy", "per intencj\\w+", "próg\\w* autonomii", "polityk\\w+"],
+          ["koszt\\w* pomyłk\\w+", "macierz\\w* pomyłek", "koszt\\w* błęd\\w+", "precyzj\\w+"],
+          ["orkiestrator\\w*", "kod (sprawdza|wykonuje)", "model proponuje", "intencj\\w+ zapisu", "idempotencj\\w+"]
+        ]
+      }
+    },
+    {
+      "id": "bramka-llm-fallback-budzet",
+      "expect": "trigger",
+      "prompt": "Budujemy wspólną bramkę (gateway) przed kilkoma dostawcami LLM dla wszystkich funkcji firmy, z automatycznym przełączaniem na innego dostawcę przy awarii. Na co uważać w projekcie? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["te same ograniczenia", "dane .* nie mogą", "rezydencj\\w+", "cicha utrata jakości", "słabszy model"],
+          ["trasy jawne", "per funkcj\\w+", "wyłącznik\\w*"],
+          ["token\\w*", "max_tokens", "budżet\\w*"],
+          ["ponowie\\w+ w jednej warstwie", "wspólny budżet", "każda warstwa ponawia", "anulow\\w+ u dostawcy"]
+        ]
+      }
+    },
+    {
+      "id": "wycofanie-zmiany-ai-indeks",
+      "expect": "trigger",
+      "prompt": "Po wdrożeniu nowego promptu w naszym asystencie RAG jakość spadła, więc wróciliśmy do starego promptu, ale odpowiedzi dalej są inne niż przed wdrożeniem. Dlaczego i jak planować wycofania? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["wersj\\w+ indeksu", "migawk\\w+ indeksu", "indeks\\w*"],
+          ["cał\\w+ konfiguracj\\w+", "model\\w*, (definicj|narzędzi)", "ustawieni\\w+ wyszukiwania"],
+          ["cache", "pamięć podręczn\\w+"],
+          ["warunk\\w+ wycofania", "przed wydaniem", "z góry"]
+        ]
+      }
     }
   ]
 }

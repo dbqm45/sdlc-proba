@@ -121,6 +121,169 @@
       "expect": "no-trigger",
       "neighbor": "core-async-delegation",
       "prompt": "Chcę, żeby Claude Code przepracował noc na moim zatwierdzonym planie w sandboxie przez claude -p. Jak przygotować kontrakt i bramki, żeby rano nie było niespodzianek?"
+    },
+    {
+      "id": "agent-obsluguje-program-zrzuty",
+      "expect": "trigger",
+      "prompt": "Budujemy agenta, który ma przygotowywać raporty w programie desktopowym do kosztorysowania: otwiera projekt, zmienia ceny, eksportuje PDF i wysyła klientowi. Planujemy, że będzie klikał po zrzutach ekranu. Czy to dobry pomysł i jak to zaprojektować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["wiersz\\w* poleceń", "CLI", "API", "format\\w* pliku", "skrypt\\w*", "COM", "drzew\\w+ dostępności"],
+          ["na końcu", "ostateczn\\w+", "dopiero gdy", "w ostateczności", "ostatni\\w+ (krok|opcj)"],
+          ["weryfik\\w+", "odczyt\\w* (wyniku|z powrotem)", "ponowne otwarci\\w+", "sprawdz\\w+ wynik\\w*"],
+          ["zatwierdz\\w+", "zgod\\w+", "potwierdz\\w+", "czeka na .?tak", "człowiek"]
+        ]
+      }
+    },
+    {
+      "id": "pamiec-agenta-typy",
+      "expect": "trigger",
+      "prompt": "Nasz asystent zapisuje wszystko, co wie o użytkowniku i zadaniach, do jednej bazy wektorowej i potem wyszukuje. Coraz częściej przywołuje nieaktualne fakty jako bieżące. Jak lepiej zaprojektować pamięć agenta? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["semantyczn\\w+", "fakt\\w*", "co jest prawdą"],
+          ["epizodyczn\\w+", "co się stało", "histori\\w+ zdarzeń"],
+          ["proceduraln\\w+", "jak to robić", "instrukcj\\w+"],
+          ["wygaś\\w+", "data weryfikacji", "przeterminowan\\w+", "typ\\w* wpisu", "pole typu", "zastępuje stary"]
+        ]
+      }
+    },
+    {
+      "id": "trwale-wykonanie-agenta",
+      "expect": "trigger",
+      "prompt": "Nasz agent wykonuje długie zadania (kilkanaście wywołań modelu i narzędzi, w tym płatność) i przy restarcie serwera zaczyna od nowa. Rozważamy Temporal, Inngest albo DBOS. Na co zwrócić uwagę? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["granic\\w+ kroków", "krok\\w* na (każde|każdy)", "jeden krok"],
+          ["deterministyczn\\w+", "ponown\\w+ wykon\\w+", "poza krokiem"],
+          ["idempotent\\w+", "klucz\\w* idempotencji", "obciąż\\w+ (kartę|dwa razy)", "podwójn\\w+"],
+          ["SIGKILL", "test\\w* odzyskiwania", "zabi\\w+ proces", "kill"]
+        ]
+      }
+    },
+    {
+      "id": "wielu-wykonawcow-wspolny-stan",
+      "expect": "trigger",
+      "prompt": "Kilku agentów-wykonawców pobiera zadania z jednej kolejki i zapisuje wyniki w wspólnym rekordzie. Czasem wykonawca znika w połowie, a czasem spóźniony nadpisuje nowszy wynik. Jak to zaprojektować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["dzierżaw\\w+", "lease", "bicie serca", "heartbeat", "wygaś\\w+"],
+          ["wersj\\w+ rekordu", "bieżąc\\w+ właściciel\\w*", "compare-and-set", "optymistyczn\\w+", "utracon\\w+ aktualizac\\w+"],
+          ["ponowieni\\w+", "wznowieni\\w+", "kompensac\\w+"],
+          ["predykat\\w*", "ukończeni\\w+ (to|jako)", "nie (zdanie|deklaracj)", "walidacj\\w+ przeszł"]
+        ]
+      }
+    },
+    {
+      "id": "swiadek-kroku-agenta",
+      "expect": "trigger",
+      "prompt": "Nasz agent sprzedażowy ma w prompcie regułę: „przed wysłaniem oferty z rabatem powyżej 20% musi być zatwierdzenie kierownika w ciągu ostatniej godziny”. Jak sprawić, żeby ta reguła naprawdę działała? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["poza (modelem|promptem)", "w kodzie", "bramk\\w+", "harness"],
+          ["dziennik\\w*", "log\\w* zdarzeń", "reguł\\w+ czasow\\w+", "sekwencj\\w+"],
+          ["powtarzaln\\w+", "deterministyczn\\w+", "ten sam stan"],
+          ["świadek", "kto sprawdz\\w+", "zapis\\w* (w logu|kto)"]
+        ]
+      }
+    },
+    {
+      "id": "kontrola-liczb-z-narzedzia",
+      "expect": "trigger",
+      "prompt": "Nasz agent ubezpieczeniowy wywołuje narzędzie oceny ryzyka i narzędzie limitu polisy, a potem pisze odpowiedź klientowi. Czasem w odpowiedzi jest inny limit niż zwróciło narzędzie. Jak to wyłapać przed wysłaniem? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "porówn\\w*",
+            "zgodn\\w*",
+            "sprawdz\\w*"
+          ],
+          [
+            "wynik\\w* narzędzi",
+            "z narzędzi",
+            "zwrócon\\w*"
+          ],
+          [
+            "w kodzie",
+            "deterministyczn\\w*",
+            "harness",
+            "przed (oddaniem|wysłaniem)"
+          ],
+          [
+            "rozbieżnoś\\w*",
+            "odsył\\w*",
+            "popraw\\w*",
+            "konkretn\\w*"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "mapa-protokolow-agentow",
+      "expect": "trigger",
+      "prompt": "Nasz agent ma korzystać z narzędzi firmy, rozmawiać z agentem partnera w innym frameworku i działać w edytorze programistów. Słyszę o MCP, A2A i ACP — który protokół do czego i czy się wykluczają? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "mcp.{0,80}(narzędzi|dan)",
+            "narzędzi.{0,40}mcp"
+          ],
+          [
+            "a2a.{0,80}(agent\\w* ?↔ ?agent|między agent|inn\\w+ agent|agent.agent)",
+            "agent card"
+          ],
+          [
+            "acp.{0,80}(edytor|ide)",
+            "edytor.{0,60}acp"
+          ],
+          [
+            "uzupełnia\\w*",
+            "nie wyklucza\\w*",
+            "razem",
+            "łącz\\w*"
+          ],
+          [
+            "niezaufan\\w*",
+            "jak dan\\w* obc",
+            "treść obc"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tracing-otel-genai",
+      "expect": "trigger",
+      "prompt": "Chcemy śledzić naszego agenta (wywołania modelu, narzędzia, ponowienia) w OpenTelemetry tak, żeby potem liczyć koszt i robić ewaluację offline ze śladów. Jak to ułożyć i jakie nazwy atrybutów? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "gen_ai\\.",
+            "genai",
+            "gen ai semantic"
+          ],
+          [
+            "jeden ślad",
+            "jeden trace",
+            "ślad na zadanie",
+            "trace na zadanie"
+          ],
+          [
+            "span\\w* potomn",
+            "child span",
+            "span\\w* (dla|na) (każd\\w+ )?(wywołani|narzędzi)"
+          ],
+          [
+            "token\\w*"
+          ],
+          [
+            "development",
+            "eksperymentaln\\w*",
+            "niestabiln\\w*",
+            "zmienia\\w*",
+            "sprawdź wersj"
+          ]
+        ]
+      }
     }
   ]
 }
