@@ -62,3 +62,18 @@ później (`decision pending`). Nie wymyślaj numerów.
 - odpowiedz: Porażka, gdy zachodzi którekolwiek: (a) licznik pokazuje liczbę różną od wyniku zapytania do tabeli deployments dla tego samego środowiska i okna 7×24h (test pokrywa też przypadek >100 wdrożeń); (b) flaga `deploy_counter` jest po wdrożeniu na prod `enabled: true` zamiast `false` (widoczność publiczna bez intencji); (c) istniejące testy strony z wyłączoną flagą przestają przechodzić bez zmian — strona ma wyglądać bajt w bajt jak dziś, gdy flaga off.
 - pytanie: Właściciel aplikacji sdlc-proba: czy licznik ma być widoczny każdemu odwiedzającemu, czy wystarczy, że widzi go właściciel (np. tylko na test, na prod po włączeniu flagi)?
 - odpowiedz: Widoczny każdemu, kto odwiedzi stronę w środowisku, w którym flaga `deploy_counter` jest włączona. Na start: włączona na test, wyłączona na prod (zgodnie z PRB-27). Prawdziwa kontrola widoczności idzie przez etapy rolloutu flagi w fazie plan — żadnej dodatkowej autoryzacji w aplikacji nie dodajemy (poza zakresem MVP).
+
+## Bramka B2: approved
+- ref: CHG-3/D3
+- id: DEC-0014
+- wyslano: tak
+- kiedy: 2026-11-03
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Zatwierdzamy requirements CHG-3: FR-001…FR-005, NF-001…NF-006, kryteria akceptacji E-01A…E-05B. Licznik „Wdrożenia w ostatnich 7 dniach: N" (dosłowny tekst, bez nazwy środowiska w etykiecie); próg wydajności GET /: p95 < 200 ms przy 10 000 wdrożeniach w bazie, flaga on. Dlaczego: Requirements cytuje DEC-0012 (triaż) i DEC-0013 (B1) w sekcji „Ustalenia z bramek", nie powtarza pytań i nie wprowadza sprzeczności (Z1 OK). FR-001 i FR-002 realizują wariant A, FR-003 wybór środowiska (domyślne APP_ENV, nieznane env → domyślne), FR-004 odporność na brak/uszkodzenie bazy, FR-005 flaga test on / prod off. NF-001 (eskape), NF-002 (bajt w bajt przy off), NF-003 (dokładność), NF-005 (DL4, CSP, parametryzowane SQL) chronią porażkę (a)/(b)/(c). P-01: trzymamy dosłowny tekst ze zgłoszenia, etykieta różnicująca poza zakresem MVP. P-02: p95 < 200 ms przy 10 000 wdrożeń to próg weryfikowalny lokalnie z indeksem (env, julianday(deployed_at)); NF-004 „powinno". Przebieg testowy A6, B2 approved z góry. (decyzja w skrzynce bramek pdi, DEC-0014)
+- zrodlo: manual
+- szkic: human
+- pytanie: Właściciel aplikacji sdlc-proba: P-01 — czy przy `?env=` innym niż bieżące środowisko etykieta licznika ma podawać nazwę środowiska (np. „Wdrożenia w ostatnich 7 dniach (prod): N"), czy zostaje dosłowny tekst ze zgłoszenia, a nieznane `?env=` liczy dla środowiska domyślnego (propozycja z FR-003)?
+- odpowiedz: Zostaje dosłowny tekst ze zgłoszenia: „Wdrożenia w ostatnich 7 dniach: N". Nazwa środowiska w etykiecie wpada do poza zakresu MVP — PRB-27 podał tę treść bez nazwy środowiska, a dodanie etykiety różnicującej powędza zakres fazy. Nieznane `?env=` liczymy dla środowiska domyślnego, zgodnie z propozycją FR-003 (strona HTML nie powinna zależeć od parametru, którego nikt nie musi podawać; test E-03C pilnuje braku „staging" w HTML).
+- pytanie: Właściciel aplikacji sdlc-proba: P-02 — jaki maksymalny czas odpowiedzi `GET /` (z licznikiem) uznajemy za próg porażki, skoro decyzje CHG-3/D2 nie podają liczby (np. p95 poniżej 200 ms przy 10 000 wdrożeń w bazie)?
+- odpowiedz: p95 `GET /` < 200 ms przy 10 000 wdrożeń w bazie i włączonej fladze `deploy_counter`, mierzone lokalnie w teście wydajnościowym (nie w prod). Próg zgodny z NF-004 „powinno”: indeks `(env, julianday(deployed_at))` już jest w schemacie, jedno zapytanie COUNT i brak zapytań gdy flaga off; p95 200 ms zostawia zapas na render, I/O dysku i narzut Node. Przekroczenie progu w teście wydajnościowym to sygnał do profilowania, nie blokada — NF-004 to wymaganie „powinno”, nie „musi”.
