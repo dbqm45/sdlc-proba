@@ -4,7 +4,7 @@ description: Użyj przy logach, metrykach, tracingu, healthcheckach, alertach i 
 metadata:
   przeglad: "2027-04-17"
   katalog: "Użyj przy logowaniu, metrykach, tracingu, healthcheckach, alertach i dashboardach (OpenTelemetry, Prometheus, Grafana). Nie do debugowania logiki biznesowej ani pipeline'ów CI."
-  slowa: "po wdrożeniu, regresja wydajności, opóźnienia wzrosły, metryki biznesowe, adnotacje wdrożeń, alerty, dashboard"
+  slowa: "po wdrożeniu, regresja wydajności, opóźnienia wzrosły, metryki biznesowe, adnotacje wdrożeń, alerty, dashboard, health zwraca 200, kontener up a nie odpowiada, sonda syntetyczna, synthetic monitoring, wygasł token, bot nie odpowiadał"
 ---
 
 # Obserwowalność
@@ -24,9 +24,30 @@ metadata:
 - OpenTelemetry; propagacja kontekstu (`traceparent`) przez HTTP i kolejki.
 - `trace_id` w każdym logu, aby łączyć logi ze śladami.
 
+### Agent AI i dochodzenie po incydencie
+- **SLO agenta:** z OpenTelemetry dostajesz tylko dostępność i opóźnienie wywołania. Resztę dodaje aplikacja jednym
+  stabilnym rekordem na koniec zadania: stan końcowy (także „słusznie odmówił” i „przekazał człowiekowi” — ani sukces,
+  ani porażka), klasa zadania, liczba kroków, interwencja człowieka, wersja przy odczycie i zapisie pamięci roboczej.
+  SLO liczysz z tego rekordu, nie z backendu śladów (nazwy spanów i typy atrybutów się zmieniają); nazwy atrybutów
+  wg konwencji GenAI OpenTelemetry tam, gdzie istnieją (wersję sprawdź przed użyciem).
+- **Powód odrzucenia narzędzia zwraca serwer narzędzia** (zła struktura / zła wartość / błąd wewnętrzny): awaria
+  narzędzia → alarm do właściciela zależności, błędne wywołanie przez agenta → zgłoszenie dla zespołu agenta.
+- **Wspólny model encji do dochodzenia:** większość czasu analizy przyczyny to odtwarzanie powiązań między
+  narzędziami, które nazywają to samo inaczej. Encja powstaje dopiero po walidacji w jednym autorytatywnym katalogu
+  (bez ogólnego typu „usługa”, który znaczy cztery rzeczy); ontologia jako kod (PR, testy, wersje); wyjście modelu
+  ograniczone do wyliczeń i typów; wolne źródło degraduje graf, ale go nie blokuje. Silnik korelacji **proponuje
+  łańcuchy z dowodami i pewnością** (np. „wdrożenie → błąd w logach” w oknie czasu), nie wydaje werdyktów. Z kanału
+  incydentu zapisujesz rozumowanie (odrzucone hipotezy, co zadziałało, kto wiedział) — postmortem jako dane
+  (ops-sre-incidents). Zmiany proponowane przez agentów zatwierdza człowiek.
+
 ## Healthchecki
 - `/health/live` — proces żyje (bez zależności).
 - `/health/ready` — gotowy na ruch (baza, cache osiągalne). Orkiestrator kieruje ruch tylko do „ready”.
+- **Sonda syntetyczna end-to-end:** healthcheck i status kontenera nie dowodzą, że usługa robi swoje (wygasły token
+  potrafi wpychać każdą wiadomość w pustą gałąź obsługi błędu, a `/health` zwraca 200). Cyklicznie (np. co
+  godzinę) wysyłasz prawdziwe zapytanie przez cały potok, od wejścia do odpowiedzi, z asercją: odpowiedź niepusta,
+  zgodna ze schematem, w czasie z SLO. Porażka sondy to alert. Sonda ma osobne konto testowe i znacznik, żeby nie
+  liczyć jej w metrykach biznesowych. Dotyczy zwłaszcza agentów AI i integracji z tokenami, które wygasają.
 
 ## Alerty
 - Alertuj na objawy odczuwalne przez użytkownika (SLO: odsetek błędów, latencja p95), nie na każdą przyczynę.

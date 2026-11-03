@@ -4,7 +4,7 @@ description: Użyj, gdy z pomysłu trzeba zrobić wymagania (PRD) — MVP w bud�
 metadata:
   przeglad: "2027-10-10"
   katalog: "Użyj, gdy pomysł albo większą zmianę w istniejącym systemie trzeba zamienić w kontrakt wymagań (PRD) przed architekturą — sesja pytań w fazach (problem, dostęp, MVP, wymagania FR, wyzwanie dla każdego wymagania, reguła biznesowa jednym zdaniem, ramy i „poza zakresem”), próg „MVP za duże” jako budżet czasu z briefu, wykrywanie pustego CRUD, wymagania jakości bez mechanizmu, otwarte pytania zamiast domysłów, tryb greenfield i brownfield (delta), skrypt requirements_lint.py. Nie do decyzji, czy i co warto budować (proc-product-discovery), mechaniki rund pytań (core-plan-interview), kryteriów akceptacji jako testów (qa-spec-first-testing) ani planu projektu z kosztem dla sponsora (proc-project-planning)."
-  slowa: "PRD, wymagania produktu, spisz wymagania, dokument wymagań, zakres MVP, pierwsza wersja, za duże MVP, pusty CRUD, reguła biznesowa, kształtowanie zakresu, wymagania funkcjonalne, FR, historyjki, poza zakresem, wymagania zmiany, mam pomysł na aplikację, product requirements, to nie są wymagania, przepisać wymagania, wymaganie z technologią, wymagania jakości, recenzent PRD"
+  slowa: "PRD, wymagania produktu, spisz wymagania, dokument wymagań, zakres MVP, pierwsza wersja, za duże MVP, pusty CRUD, reguła biznesowa, kształtowanie zakresu, wymagania funkcjonalne, FR, historyjki, poza zakresem, wymagania zmiany, mam pomysł na aplikację, product requirements, to nie są wymagania, przepisać wymagania, wymaganie z technologią, wymagania jakości, recenzent PRD, szybko i niezawodnie, przymiotnik w wymaganiu, wymaganie jakościowe niejasne, czy wymaganie jest wystarczające, zanim agent zacznie pisać kod, spec kit, .specify, constitution.md, openspec, delta specyfikacji, scalenie wymagań zmiany, jak system ma działać dziś, stare zmiany, dokument wymagań zmiany"
 ---
 
 # Kształtowanie wymagań (PRD) — od pomysłu do kontraktu
@@ -18,6 +18,9 @@ architektura (B2 w core-delivery-lifecycle).
 - Pomysł na produkt albo większa zmiana w działającym systemie, zanim powstanie architektura lub plan.
 - Na ścieżce skróconej (core-delivery-lifecycle) ta sesja zastępuje fazy 1 i 3 w jednym dokumencie.
 - Przy każdej późniejszej większej zmianie zakresu wykonaj **mini-sesję** tej procedury dla samej delty.
+- Repo ma już specyfikacje (`.specify/` ze Spec Kit, `openspec/` z OpenSpec) → czytasz je jako istniejące wymagania
+  i dopisujesz deltę, zamiast pisać równoległy dokument; delta zmiany scalana do bieżącego stanu wymagań:
+  `references/istniejace-specyfikacje.md`.
 
 Czy w ogóle warto to budować (wynik, szanse, eksperymenty) — najpierw proc-product-discovery.
 
@@ -96,6 +99,14 @@ Sprawdź i nazwij każdą lukę razem z jej konsekwencją:
 - [ ] „Poza zakresem” ma co najmniej jedną pozycję;
 - [ ] (brownfield) zapisane, jakie zachowanie zostaje bez zmian.
 Człowiek może przyjąć lukę — trafia wtedy do „Otwartych pytań” z adresatem i informacją „blokuje: tak/nie”.
+
+**Technika dwóch implementacji** dla zdania z przymiotnikiem jakości („szybko”, „bezpiecznie”, „niezawodnie”):
+naszkicuj dwa rozsądne rozwiązania i sprawdź, czy różnią się czymś widocznym dla użytkownika lub operatora. Jeśli
+tak, specyfikacja milczy i brakuje decyzji. Pytasz o pięć klas: skala, tryb wykonania (od razu / w tle), awaria
+i ponowienia, uprawnienia, migracja istniejących danych. Każda decyzja ma warianty, uzasadnienie, **sposób
+weryfikacji** (test, fitness function w CI, punkt przeglądu) i właściciela (rola, nie „zespół”). Odwracalność ×
+zasięg: lokalne i odwracalne decyduje agent z zapisem, szerokie proponuje agent, jednokierunkowe rozstrzyga
+właściciel przed kodem.
 
 ## Zapis
 - `01-discovery/brief.md` (szablon core-project-record): problem, persona, cele z miarą (**główne**,

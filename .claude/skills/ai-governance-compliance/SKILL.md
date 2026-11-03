@@ -4,7 +4,7 @@ description: Użyj przy zgodności systemu AI z AI Act — rola, klasa ryzyka, o
 metadata:
   przeglad: "2027-01-17"
   katalog: "Użyj, gdy trzeba ustalić, co AI Act (rozporządzenie (UE) 2024/1689) i ramy zarządzania AI oznaczają dla systemu lub firmy — inwentarz systemów AI, rola (dostawca, podmiot stosujący, importer, dystrybutor, art. 25), klasa ryzyka (praktyki zakazane, wysokie ryzyko wg załącznika III i produktów, przejrzystość z art. 50, ryzyko minimalne, modele AI ogólnego przeznaczenia), obowiązki na rolę (zarządzanie ryzykiem, dane, dokumentacja techniczna, rejestrowanie zdarzeń, nadzór człowieka, ocena zgodności, rejestracja, monitorowanie po wprowadzeniu, poważne incydenty, kompetencje w zakresie AI, FRIA), terminy stosowania z uwzględnieniem Digital Omnibus, NIST AI RMF i profil generatywnej AI (AI 600-1), ISO/IEC 42001 i relacja do 27001, ocena wpływu, karty modelu i zbiorów danych, podstawy uczciwości i stronniczości, proces incydentu AI, polityka użycia AI dla pracowników, styk z RODO (art. 22). Nie do RODO, DPIA i retencji (arch-privacy-compliance), modelu zagrożeń (arch-threat-modeling), pomiaru jakości i ewaluacji (ai-evals), bezpieczeństwa pracy agenta (core-agent-security) ani strategii produktu AI (ai-product-management). Nie jest poradą prawną."
-  slowa: "AI Act, akt o sztucznej inteligencji, rozporządzenie o AI, zgodność AI, system wysokiego ryzyka, praktyki zakazane, dostawca AI, podmiot stosujący, deployer, provider, ocena zgodności, znak CE, NIST AI RMF, ISO 42001, 42001, zarządzanie AI, AI governance, polityka AI, polityka użycia AI, regulamin AI dla pracowników, rejestr systemów AI, FRIA, ocena wpływu na prawa podstawowe, karta modelu, model card, stronniczość, bias, fairness, incydent AI, kompetencje AI, AI literacy, Digital Omnibus, model ogólnego przeznaczenia, GPAI, etyka AI, odpowiedzialna AI, czy nasz system podlega AI Act"
+  slowa: "AI Act, akt o sztucznej inteligencji, rozporządzenie o AI, zgodność AI, system wysokiego ryzyka, praktyki zakazane, dostawca AI, podmiot stosujący, deployer, provider, ocena zgodności, znak CE, NIST AI RMF, ISO 42001, 42001, zarządzanie AI, AI governance, polityka AI, polityka użycia AI, regulamin AI dla pracowników, rejestr systemów AI, FRIA, ocena wpływu na prawa podstawowe, karta modelu, model card, stronniczość, bias, fairness, incydent AI, kompetencje AI, AI literacy, Digital Omnibus, model ogólnego przeznaczenia, GPAI, etyka AI, odpowiedzialna AI, czy nasz system podlega AI Act, znak wodny, watermark, oznaczanie treści ai, c2pa, content credentials, kodeks praktyk oznaczania, art. 50 ust. 2, treści generowane przez ai"
 ---
 
 # Zgodność i zarządzanie AI (AI Act, NIST, ISO 42001)
@@ -35,7 +35,8 @@ jakości — **ai-evals**; strategia produktu — **ai-product-management**; pol
       dostęp do usług podstawowych, organy ścigania, migracja, wymiar sprawiedliwości). Wyjątek z art. 6 ust. 3 (system
       bez istotnego wpływu na wynik decyzji) wymaga udokumentowanej oceny i rejestracji; profilowanie osób go wyklucza.
    3. **Przejrzystość** (art. 50): chatbot (poinformuj o kontakcie z AI), treści syntetyczne (oznaczenie
-      w formacie maszynowym), deepfake, rozpoznawanie emocji. Może się nakładać na klasę 2.
+      w formacie maszynowym; warstwy, kodeks praktyk z 2026-06 i granice znaku wodnego:
+      `references/znakowanie-techniczne.md`), deepfake, rozpoznawanie emocji. Może się nakładać na klasę 2.
    4. **Ryzyko minimalne** — brak obowiązków poza kompetencjami (art. 4); kodeksy dobrych praktyk dobrowolne.
    5. **Model ogólnego przeznaczenia** (GPAI, art. 51–55) — osobna oś dla dostawcy modelu: dokumentacja techniczna,
       polityka praw autorskich, streszczenie danych treningowych; przy ryzyku systemowym dodatkowo ocena i zgłaszanie
@@ -62,7 +63,7 @@ jakości — **ai-evals**; strategia produktu — **ai-product-management**; pol
 | 2024-08-01 | wejście w życie rozporządzenia (UE) 2024/1689 | pewne |
 | 2025-02-02 | zakazy (art. 5) i kompetencje w zakresie AI (art. 4) | pewne |
 | 2025-08-02 | obowiązki GPAI, zarządzanie, kary | pewne |
-| 2026-08-02 | ogólne stosowanie, w tym art. 50; art. 50 ust. 2 dla systemów już na rynku do 2026-12-02 | [niezweryfikowane] |
+| 2026-08-02 | ogólne stosowanie, w tym art. 50; art. 50 ust. 2 dla systemów już na rynku do 2026-12-02 | art. 50 od 2026-08-02 potwierdzone (strona Komisji o kodeksie, 2026-11-01); 2026-12-02 [niezweryfikowane] |
 | 2026-12-02 | nowy zakaz (treści intymne bez zgody, CSAM) | [niezweryfikowane] |
 | 2027-12-02 | wysokie ryzyko z załącznika III (było 2026-08-02) | [niezweryfikowane] |
 | 2028-08-02 | wysokie ryzyko z załącznika I, produkty (było 2027-08-02) | [niezweryfikowane] |
@@ -83,7 +84,7 @@ Wynik (fragment) [przykład]:
 | Szeregowanie CV | podmiot stosujący | wysokie ryzyko (zał. III, zatrudnienie) | ocena i selekcja kandydatów; profilowanie wyklucza wyjątek z art. 6 ust. 3 | instrukcja dostawcy, nadzór człowieka, logi ≥6 mies., informowanie kandydatów, kompetencje; decyzja o FRIA i DPIA — prawnik/IOD |
 | Chatbot rekrutacyjny | dostawca systemu (własny produkt na cudzym modelu) | przejrzystość (art. 50) | komunikuje się z ludźmi | informacja „rozmawiasz z AI”; jeśli chatbot ocenia kandydatów, klasa rośnie do wysokiego ryzyka |
 
-Terminy: art. 50 od 2026-08-02 [niezweryfikowane]; wysokie ryzyko wg Omnibus od 2027-12-02 [niezweryfikowane]; art. 4 już teraz.
+Terminy: art. 50 od 2026-08-02 (potwierdzone na stronie Komisji); wysokie ryzyko wg Omnibus od 2027-12-02 [niezweryfikowane]; art. 4 już teraz.
 
 ## Checklista
 - [ ] inwentarz systemów AI, także wbudowanych w SaaS i „cienia”

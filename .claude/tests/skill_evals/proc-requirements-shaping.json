@@ -110,6 +110,78 @@
       "expect": "no-trigger",
       "neighbor": "proc-product-discovery",
       "prompt": "Mamy listę 15 pomysłów na nowe funkcje. Jak je uszeregować metodą RICE i jakie metryki sukcesu wybrać po wydaniu?"
+    },
+    {
+      "id": "dwie-implementacje-przymiotnik",
+      "expect": "trigger",
+      "prompt": "W wymaganiu stoi: „Eksport raportu ma działać szybko i niezawodnie”. Zanim agent zacznie pisać kod, jak sprawdzić, czy to wymaganie jest wystarczające? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          ["dwa (rozsądne )?rozwiązani\\w+", "dwie implementac\\w+", "dwa warianty"],
+          ["skal\\w+", "w tle", "asynchroniczn\\w+", "od razu"],
+          ["awari\\w+", "ponowie\\w+", "uprawnie\\w+", "migrac\\w+"],
+          ["weryfikac\\w+", "test\\w*", "właściciel\\w*", "odwracaln\\w+"]
+        ]
+      }
+    },
+    {
+      "id": "repo-ze-spec-kit",
+      "expect": "trigger",
+      "prompt": "Mamy spisać wymagania do nowej funkcji, ale repo już ma katalog .specify/ z constitution.md i specs/004-eksport/ ze spec.md, plan.md i tasks.md. Pisać od nowa własny dokument wymagań? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "nie pisz\\w* (od nowa|równoległ)",
+            "zamiast (pisać|tworzyć)",
+            "czytaj\\w*.{0,40}(istniejąc|spec\\.md)",
+            "istniejąc\\w* wymaga",
+            "nie dubluj",
+            "jedno źródło"
+          ],
+          [
+            "constitution",
+            "zasad\\w*"
+          ],
+          [
+            "needs clarification",
+            "otwart\\w* pyta"
+          ],
+          [
+            "\\[p\\]",
+            "równoleg\\w*"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "delta-zmiany-scalenie",
+      "expect": "trigger",
+      "prompt": "Po każdej zmianie mamy osobny dokument wymagań zmiany, ale nikt nie wie, jak system ma działać dziś, bo trzeba czytać 30 starych zmian. Jak to uporządkować? Odpowiedz zwięźle.",
+      "checks": {
+        "all": [
+          [
+            "delt\\w*",
+            "added|modified|removed",
+            "dodan\\w*.{0,30}zmienion\\w*.{0,30}usunię"
+          ],
+          [
+            "scal\\w*",
+            "włącz\\w* do",
+            "główn\\w* (specyfikac|dokument)",
+            "bieżąc\\w* stan"
+          ],
+          [
+            "archiw\\w*",
+            "histori\\w*"
+          ],
+          [
+            "kontrol\\w*",
+            "sprawdz\\w*",
+            "ustaleni\\w*",
+            "bez odpowiednika"
+          ]
+        ]
+      }
     }
   ]
 }
