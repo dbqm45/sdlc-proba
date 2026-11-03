@@ -13,6 +13,7 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const DEFAULT_BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
 const DEFAULT_DEPLOYMENTS_DB = process.env.DEPLOYMENTS_DB || path.join(__dirname, '..', 'config', 'deployments.db');
 const VISITOR_COOKIE = 'visitor';
+const ISO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;   // ?before= (UTC)
 
 function readBuildInfo(file) {
     try {
@@ -61,7 +62,14 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
                 res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
                 return;
             }
-            res.writeHead(200, { 'content-type': 'application/json' }).end(JSON.stringify(listDeployments(deploymentsDb, target, limit)));
+            const before = url.searchParams.get('before');
+            if (before !== null && !(ISO_TIME.test(before) && !Number.isNaN(Date.parse(before)))) {
+                const error = 'before must be an ISO 8601 UTC time, e.g. 2026-11-01T10:00:00Z';
+                res.writeHead(400, { 'content-type': 'application/json' }).end(JSON.stringify({ error }));
+                return;
+            }
+            res.writeHead(200, { 'content-type': 'application/json' })
+                .end(JSON.stringify(listDeployments(deploymentsDb, target, limit, before)));
             return;
         }
         if (url.pathname === '/style.css') {

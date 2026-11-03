@@ -99,3 +99,41 @@ test('GET /deployments with limit outside 1-100 or not an integer → 400', asyn
         assert.match((await res.json()).error, /limit/);
     }
 });
+
+test('GET /deployments?before=<time> returns the deployments older than that time, newest first', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(5)));
+    const res = await fetch(`${base}/deployments?env=prod&before=2026-10-03T10:00:00Z`);
+    assert.equal(res.status, 200);
+    assert.deepEqual(await res.json(), [
+        { sha: 'sha01', deployedAt: '2026-10-02T10:00:00Z' },
+        { sha: 'sha00', deployedAt: '2026-10-01T10:00:00Z' },
+    ]);
+});
+
+test('GET /deployments combines before with limit', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(5)));
+    const res = await fetch(`${base}/deployments?env=prod&before=2026-10-03T10:00:00Z&limit=1`);
+    assert.equal(res.status, 200);
+    assert.deepEqual((await res.json()).map((d) => d.sha), ['sha01']);
+});
+
+test('GET /deployments with before that is not an ISO 8601 time → 400', async (t) => {
+    const base = await start(t, seededDb(t, prodDeployments(3)));
+    for (const before of ['abc', '2026-13-40']) {
+        const res = await fetch(`${base}/deployments?env=prod&before=${before}`);
+        assert.equal(res.status, 400, `before=${before}`);
+        assert.match(res.headers.get('content-type'), /^application\/json/);
+        assert.match((await res.json()).error, /before/);
+    }
+});
+
+test('GET /deployments orders and pages by time across …Z and …000Z timestamps', async (t) => {
+    const base = await start(t, seededDb(t, [
+        { env: 'prod', sha: 'whole', deployedAt: '2026-10-01T10:00:00Z' },
+        { env: 'prod', sha: 'millis', deployedAt: '2026-10-01T10:00:00.500Z' },
+    ]));
+    const all = await (await fetch(`${base}/deployments?env=prod`)).json();
+    assert.deepEqual(all.map((d) => d.sha), ['millis', 'whole']);
+    const older = await (await fetch(`${base}/deployments?env=prod&before=2026-10-01T10:00:00.500Z`)).json();
+    assert.deepEqual(older.map((d) => d.sha), ['whole']);
+});
