@@ -1,0 +1,46 @@
+// Examples for the semgrep rule test (test/semgrep-rules.test.js). Not code: the .fixture extension keeps
+// the deliberate SQL injection below out of repository scans.
+const LIST_SQL = 'SELECT 1';
+const TABLE = 'deployments';
+
+function bad(db, env, where, req) {
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare("SELECT * FROM t WHERE env = '" + env + "'");
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM t WHERE env = ' + env);
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare(env + ' LIMIT 1');
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM ' + TABLE + ' WHERE env = ' + env + ' LIMIT 1');
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM t WHERE ' + where);
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM t WHERE env = ' + req.query.env);
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare(`SELECT * FROM t WHERE env = '${env}'`);
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare(`SELECT * FROM ${TABLE} WHERE env = '${env}'`);
+    // ruleid: node-sqlite-sql-from-string
+    db.prepare(`SELECT * FROM t WHERE env = '${req.query.env}'`);
+    // ruleid: node-sqlite-sql-from-string
+    db.exec('DELETE FROM t WHERE env = ' + env);
+    // ruleid: node-sqlite-sql-from-string
+    db.exec(`DELETE FROM t WHERE env = '${env}'`);
+}
+
+function good(db) {
+    // ok: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM t WHERE env = ?');
+    // ok: node-sqlite-sql-from-string
+    db.prepare('SELECT * FROM t ' + 'WHERE env = ? ' + 'LIMIT ?');
+    // ok: node-sqlite-sql-from-string
+    db.prepare(LIST_SQL);
+    // ok: node-sqlite-sql-from-string
+    db.prepare(`EXPLAIN QUERY PLAN ${LIST_SQL}`);
+    // ok: node-sqlite-sql-from-string
+    db.prepare('EXPLAIN QUERY PLAN ' + LIST_SQL);
+    // ok: node-sqlite-sql-from-string
+    db.prepare("SELECT * FROM " + TABLE + " WHERE env = ?");
+    // ok: node-sqlite-sql-from-string
+    db.exec('CREATE TABLE IF NOT EXISTS t (env TEXT)');
+}
