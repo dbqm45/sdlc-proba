@@ -6,22 +6,34 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
 /**
+ * One page of an environment's deployments, newest first; ties in time are ordered by rowid.
+ *
  * @param {string} file SQLite file with a `deployments (env, sha, deployed_at)` table
  * @param {string} env
- * @param {number} [limit] newest deployments to return (default 20)
- * @param {string|null} [before] only deployments older than this ISO 8601 time (a page cursor)
- * @returns {{ sha: string, deployedAt: string }[]} newest first; [] when the file does not exist
+ * @param {number} [limit] deployments per page (default 20)
+ * @param {{ before?: string|null, after?: { t: string, id: number }|null }} [from] start below an ISO 8601
+ *   time (`before`) or below the last item of the previous page (`after`, from `next`)
+ * @returns {{ items: { sha: string, deployedAt: string }[], next: { t: string, id: number }|null }}
+ *   `next` is set only when more deployments follow; no file means no deployments
  */
-function listDeployments(file, env, limit = DEFAULT_LIMIT, before = null) {
-    if (!fs.existsSync(file)) return [];
+function listDeployments(file, env, limit = DEFAULT_LIMIT, { before = null, after = null } = {}) {
+    if (!fs.existsSync(file)) return { items: [], next: null };
     const db = new DatabaseSync(file, { readOnly: true });
     try {
-        return db
-            // julianday(): deployed_at comes as …:00Z and …:00.000Z, which do not compare correctly as text
-            .prepare('SELECT sha, deployed_at AS deployedAt FROM deployments WHERE env = ? '
-                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?)) ORDER BY julianday(deployed_at) DESC LIMIT ?')
-            .all(env, before, before, limit)
-            .map(({ sha, deployedAt }) => ({ sha, deployedAt }));
+        // julianday(): deployed_at comes as …:00Z and …:00.000Z, which do not compare correctly as text
+        const rows = db
+            .prepare('SELECT rowid AS id, sha, deployed_at AS deployedAt FROM deployments WHERE env = ? '
+                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?)) '
+                + 'AND (? IS NULL OR julianday(deployed_at) < julianday(?) '
+                + 'OR (julianday(deployed_at) = julianday(?) AND rowid < ?)) '
+                + 'ORDER BY julianday(deployed_at) DESC, rowid DESC LIMIT ?')
+            .all(env, before, before, after?.t ?? null, after?.t ?? null, after?.t ?? null, after?.id ?? null, limit + 1);
+        const page = rows.slice(0, limit);
+        const last = page[page.length - 1];
+        return {
+            items: page.map(({ sha, deployedAt }) => ({ sha, deployedAt })),
+            next: rows.length > limit ? { t: last.deployedAt, id: last.id } : null,
+        };
     } finally {
         db.close();
     }
