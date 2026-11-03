@@ -1,9 +1,9 @@
 ---
 task: chg-1-ocena-skutku-r1-zamkniecie-zmiany
-status: active
+status: done
 by: nieznany
 started: 2026-10-31 20:22
-updated: 2026-10-31 20:22
+updated: 2026-11-03 21:27
 branch: main
 ---
 # CHG-1: ocena skutku R1 — zamknięcie zmiany
@@ -28,7 +28,7 @@ branch: main
 
 <!-- stan-automatyczny:begin -->
 ## Stan automatyczny (zapisuje hook — nie edytuj)
-- Zapisano: 2026-10-31 20:29 · zdarzenie: kompaktowanie kontekstu
-- Gałąź: main · ostatni commit: 5e70c68 Merge pull request #9 from dbqm45/flag/show-last-deployed-100
-- Niezacommitowane zmiany (1): `ocs/project/README.md`
+- Zapisano: 2026-11-03 21:00 · zdarzenie: kompaktowanie kontekstu
+- Gałąź: main · ostatni commit: 809adf0 Merge pull request #25 from dbqm45/story/zawezenie-regul-skanu
+- Niezacommitowane zmiany (0): —
 <!-- stan-automatyczny:end -->
