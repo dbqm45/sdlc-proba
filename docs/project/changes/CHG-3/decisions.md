@@ -77,3 +77,18 @@ później (`decision pending`). Nie wymyślaj numerów.
 - odpowiedz: Zostaje dosłowny tekst ze zgłoszenia: „Wdrożenia w ostatnich 7 dniach: N". Nazwa środowiska w etykiecie wpada do poza zakresu MVP — PRB-27 podał tę treść bez nazwy środowiska, a dodanie etykiety różnicującej powędza zakres fazy. Nieznane `?env=` liczymy dla środowiska domyślnego, zgodnie z propozycją FR-003 (strona HTML nie powinna zależeć od parametru, którego nikt nie musi podawać; test E-03C pilnuje braku „staging" w HTML).
 - pytanie: Właściciel aplikacji sdlc-proba: P-02 — jaki maksymalny czas odpowiedzi `GET /` (z licznikiem) uznajemy za próg porażki, skoro decyzje CHG-3/D2 nie podają liczby (np. p95 poniżej 200 ms przy 10 000 wdrożeń w bazie)?
 - odpowiedz: p95 `GET /` < 200 ms przy 10 000 wdrożeń w bazie i włączonej fladze `deploy_counter`, mierzone lokalnie w teście wydajnościowym (nie w prod). Próg zgodny z NF-004 „powinno”: indeks `(env, julianday(deployed_at))` już jest w schemacie, jedno zapytanie COUNT i brak zapytań gdy flaga off; p95 200 ms zostawia zapas na render, I/O dysku i narzut Node. Przekroczenie progu w teście wydajnościowym to sygnał do profilowania, nie blokada — NF-004 to wymaganie „powinno”, nie „musi”.
+
+## Bramka B3: approved
+- ref: CHG-3/D4
+- id: DEC-0015
+- wyslano: tak
+- kiedy: 2026-11-05
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Zatwierdzamy architekturę i plan CHG-3: ADR-1/2/3 oraz jedno cięcie TSK-1 za flagą deploy_counter pokrywające FR-001..FR-005 i NF-001..NF-006. Właściciel flagi: dbqm45, remove_by 2027-02-28. Rollout: etap test (min. 3 dni, zero 5xx, zgodność z /deployments) → 100%. Dlaczego: Z1 OK: pytania B1 i B2 zebrane w architecture.md i nie wracają w plan.md ani release.yaml. Plan trzyma TDD, lista plików pokrywa wszystkie FR i NF, weryfikacja uwzględnia test wydajnościowy p95 oraz guardrail deploy_counter.enabled=false na prod. Rollout zgodny z core-delivery-lifecycle: min. 3 dni + zero 5xx + zgodność z /deployments chronią przed cichym rozjechaniem się licznika ze źródłem danych. Przebieg testowy A6 — B3 zatwierdzam z góry zgodnie z decyzją właściciela z 2026-11-03. (decyzja w skrzynce bramek pdi, DEC-0015)
+- zrodlo: manual
+- szkic: human
+- pytanie: Właściciel aplikacji sdlc-proba: kto jest właścicielem flagi `deploy_counter` (decyduje o przejściu etapów rolloutu) i czy `remove_by: 2027-02-28` w release.yaml (propozycja Tomasza) jest właściwą datą usunięcia flagi?
+- odpowiedz: Właściciel flagi deploy_counter = dbqm45 (właściciel aplikacji sdlc-proba). remove_by 2027-02-28 zatwierdzamy — ~4 miesiące od wdrożenia daje czas na pełny rollout i obserwację bez wiszącej flagi MVP.
+- pytanie: Właściciel aplikacji sdlc-proba: jakie kryterium wyjścia z etapu `test` przed włączeniem na prod (propozycja w release.yaml: min. 3 dni na test, zero błędów 5xx w logu serwera i liczba zgodna z `/deployments` w spot-checku)?
+- odpowiedz: Akceptujemy propozycję z release.yaml: min. 3 dni na etapie test, zero błędów 5xx w logu serwera i liczba na stronie zgodna z /deployments w spot-checku. Trzyma standard core-delivery-lifecycle i chroni przed cichym rozjechaniem się licznika ze źródłem danych.
