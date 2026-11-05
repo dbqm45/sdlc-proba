@@ -47,7 +47,9 @@ claude --agent talos
 7. **Koniec:** jeden PR (Talos go nie scala) i raport.
 
 ## Co dostajesz
-Katalog `.claude/runs/<data>-<slug>/` (ignorowany przez git):
+Katalog `tmp/talos/runs/<data>-<slug>/` (ignorowany przez git — `.claude/` jest ścieżką chronioną w Claude Code,
+więc `--permission-mode acceptEdits` nie pozwoliłby pisać do `.claude/runs/`; code.claude.com/docs/en/permission-modes,
+odczyt 2026-11-05):
 
 | Plik | Treść |
 |---|---|
@@ -91,7 +93,11 @@ Wymagania wobec produktu:
   `ERR_PNPM_NO_MATURE_MATCHING_VERSION` (pnpm/pnpm#11203, #12450) — PR-y Dependabota z wersjami młodszymi niż
   7 dni czekają albo mają `cooldown` w `dependabot.yml`.
 - **Sieć:** rejestr reguł semgrep pobiera się z `semgrep.dev` — w kontenerze z listą dozwolonych hostów dodaj go
-  (Z8a); bez sieci podaj lokalne reguły przez `TALOS_SEMGREP_CONFIG=<plik.yml>`.
+  (Z8a); bez sieci podaj lokalne reguły przez `TALOS_SEMGREP_CONFIG=<plik.yml albo katalog>`.
+- **Rejestr bez logowania:** `p/owasp-top-ten` pobiera się bez `semgrep login` (semgrep 1.183.0, sprawdzone
+  2026-11-03: 560 reguł), ale zestaw jest węższy niż pełne reguły — nie ma w nim m.in. `tainted-sql-string`
+  (Express) ani reguł dla `node:sqlite`. Wzorce, których rejestr nie łapie, dopisuje produkt w `.semgrep.yml`
+  (skan dokłada go zawsze); szerszy zestaw w CI daje logowanie tokenem (`SEMGREP_APP_TOKEN`).
 
 ## Gdy Talos się zatrzyma
 Blok STOP mówi, co blokuje (z dowodem), co jest już zrobione (commity), czego potrzeba od Ciebie i od którego

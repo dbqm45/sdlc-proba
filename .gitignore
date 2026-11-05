@@ -12,6 +12,7 @@ config/deployments.db
 .claude/agent-memory-local/
 .claude/scratch/
 .claude/runs/
+tmp/talos/runs/
 __pycache__/
 .idea
 .claude/factory-manifest.json
