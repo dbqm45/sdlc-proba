@@ -2,6 +2,7 @@ node_modules/
 .env
 config/build.json
 config/deployments.db
+.claude/scheduled_tasks.lock
 
 # team-factory:begin (managed by factory/install.py)
 .env.*
