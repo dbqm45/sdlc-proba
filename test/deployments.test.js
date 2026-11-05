@@ -217,3 +217,45 @@ test('GET /deployments with both cursor and before → 400', async (t) => {
     assert.match(res.headers.get('content-type'), /^application\/json/);
     assert.match((await res.json()).error, /cursor|before/);
 });
+
+// --- CHG-3 TSK-1: countDeployments (E-01A..F) ---
+const { countDeployments } = require('../src/deployments');
+const { DatabaseSync: Db } = require('node:sqlite');
+
+const NOW = Date.parse('2026-11-05T12:00:00Z');
+const ago = (ms) => new Date(NOW - ms).toISOString();
+const H = 3600e3;
+const SINCE = ago(7 * 24 * H);
+
+test('countDeployments: window and environment (E-01A)', (t) => {
+    const file = seededDb(t, [
+        { env: 'test', sha: 'a', deployedAt: ago(H) },
+        { env: 'test', sha: 'b', deployedAt: ago(6 * 24 * H + 23 * H) },
+        { env: 'test', sha: 'c', deployedAt: ago(7 * 24 * H + H) },
+        { env: 'prod', sha: 'd', deployedAt: ago(H) },
+    ]);
+    assert.equal(countDeployments(file, 'test', SINCE), 2);
+});
+
+test('countDeployments: more than 100 deployments are all counted (E-01B, E-01E)', (t) => {
+    const rows = Array.from({ length: 150 }, (_, i) => ({ env: 'test', sha: 's' + i, deployedAt: ago((i + 1) * 60e3) }));
+    const file = seededDb(t, rows);
+    const db = new Db(file, { readOnly: true });
+    const direct = db.prepare('SELECT COUNT(*) AS n FROM deployments WHERE env = ? AND julianday(deployed_at) >= julianday(?)').get('test', SINCE).n;
+    db.close();
+    assert.equal(countDeployments(file, 'test', SINCE), 150);
+    assert.equal(countDeployments(file, 'test', SINCE), direct);
+});
+
+test('countDeployments: mixed time formats (E-01C) and the lower bound is inclusive (E-01F)', (t) => {
+    const file = seededDb(t, [
+        { env: 'test', sha: 'a', deployedAt: '2026-11-01T10:00:00Z' },
+        { env: 'test', sha: 'b', deployedAt: '2026-11-01T10:00:00.000Z' },
+        { env: 'test', sha: 'c', deployedAt: SINCE },
+    ]);
+    assert.equal(countDeployments(file, 'test', SINCE), 3);
+});
+
+test('countDeployments: a missing file is zero (E-01D)', () => {
+    assert.equal(countDeployments('/nonexistent/deployments.db', 'test', SINCE), 0);
+});

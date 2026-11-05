@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
-const { DEFAULT_LIMIT, MAX_LIMIT, listDeployments } = require('./deployments');
+const { DEFAULT_LIMIT, MAX_LIMIT, countDeployments, listDeployments } = require('./deployments');
 const { ENVIRONMENTS, readFlags, isOn } = require('./flags');
 const { renderPage } = require('./page');
 
@@ -13,6 +13,7 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const DEFAULT_BUILD_FILE = path.join(__dirname, '..', 'config', 'build.json');
 const DEFAULT_DEPLOYMENTS_DB = process.env.DEPLOYMENTS_DB || path.join(__dirname, '..', 'config', 'deployments.db');
 const VISITOR_COOKIE = 'visitor';
+const COUNTER_WINDOW_MS = 7 * 24 * 3600 * 1000;   // the deploy counter window, UTC
 const ISO_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;   // ?before= (UTC)
 
 function isIsoTime(value) {
@@ -116,7 +117,14 @@ function createServer({ env = process.env.APP_ENV || 'test', configDir, buildFil
         const visitor = visitorOf(req);
         const headers = { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'self'" };
         if (visitor.fresh) headers['set-cookie'] = `${VISITOR_COOKIE}=${visitor.id}; Path=/; HttpOnly; SameSite=Lax`;
-        res.writeHead(200, headers).end(renderPage({ env, on: (key) => isOn(flags, key, visitor.id), deployedAt }));
+        const on = (key) => isOn(flags, key, visitor.id);
+        let deployCount;
+        if (on('deploy_counter')) {   // the database is opened only when the flag is on
+            const requested = url.searchParams.get('env');
+            const since = new Date(Date.now() - COUNTER_WINDOW_MS).toISOString();
+            deployCount = countDeployments(deploymentsDb, ENVIRONMENTS.includes(requested) ? requested : env, since);
+        }
+        res.writeHead(200, headers).end(renderPage({ env, on, deployedAt, deployCount }));
     };
     // An unexpected error (e.g. a corrupt deployments DB) answers 500 instead of crashing the process;
     // details go to the server log only, never to the client.
