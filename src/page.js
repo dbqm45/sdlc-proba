@@ -2,11 +2,15 @@
 const escape = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /**
- * @param {{ env: string, on: (key: string) => boolean, deployedAt?: string|null }} input
- *   `on` says whether a flag is on for this visitor; `deployedAt` is the ISO date from config/build.json
+ * @param {{ env: string, on: (key: string) => boolean, deployedAt?: string|null, deployCount?: number }} input
+ *   `on` says whether a flag is on for this visitor; `deployedAt` is the ISO date from config/build.json;
+ *   `deployCount` is the deployments of the last 7 days (shown behind `deploy_counter`)
  * @returns {string} HTML
  */
-function renderPage({ env, on, deployedAt }) {
+function renderPage({ env, on, deployedAt, deployCount = 0 }) {
+    const counter = on('deploy_counter')
+        ? `\n<p data-flag="deploy_counter">Wdrożenia w ostatnich 7 dniach: ${escape(deployCount)}</p>`
+        : '';
     const banner = on('welcome_banner')
         ? '<p class="banner" data-flag="welcome_banner">Witaj w sdlc-sandbox — repo próbnym całego przepływu.</p>'
         : '';
@@ -21,7 +25,7 @@ function renderPage({ env, on, deployedAt }) {
 <main>
 <h1>sdlc-sandbox</h1>
 ${banner}
-<p>Środowisko: <strong>${escape(env)}</strong></p>
+<p>Środowisko: <strong>${escape(env)}</strong></p>${counter}
 </main>
 ${footer}
 </body>

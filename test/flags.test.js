@@ -28,3 +28,10 @@ test('readFlags: a missing rollout means 100, values are clamped', () => {
     assert.deepEqual(readFlags('test', dir), { x: { enabled: true, rollout: 100 }, y: { enabled: true, rollout: 100 }, z: { enabled: false, rollout: 30 } });
     fs.rmSync(dir, { recursive: true, force: true });
 });
+
+test('deploy_counter: on in test, off in prod; other flags unchanged (E-05A, E-05B)', () => {
+    assert.deepEqual(readFlags('test').deploy_counter, { enabled: true, rollout: 100 });
+    assert.deepEqual(readFlags('prod').deploy_counter, { enabled: false, rollout: 0 });
+    assert.deepEqual(readFlags('test').show_last_deployed, { enabled: true, rollout: 100 });
+    assert.deepEqual(readFlags('prod').welcome_banner, { enabled: false, rollout: 0 });
+});

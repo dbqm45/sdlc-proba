@@ -37,3 +37,12 @@ test('an unexpected error answers 500 without internals, logs the details and ke
 
     assert.ok(logged.some((line) => /not a database/.test(line)), `details logged: ${logged.join(' | ')}`);
 });
+
+test('GET / with deploy_counter on and a corrupt database answers 500 without internals (E-04B)', async (t) => {
+    t.mock.method(console, 'error', () => {});
+    const base = await start(t, corruptDb(t));
+    const res = await fetch(base + '/', { signal: AbortSignal.timeout(3000) });
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), { error: 'internal error' });
+    assert.equal((await fetch(base + '/health')).status, 200);
+});

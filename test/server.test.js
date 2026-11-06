@@ -69,3 +69,57 @@ test('health, the stylesheet, 404 and 405', async (t) => {
     assert.equal((await fetch(`${base}/nope`)).status, 404);
     assert.equal((await fetch(`${base}/`, { method: 'POST' })).status, 405);
 });
+
+// --- CHG-3 TSK-1: deploy counter on GET / (E-02, E-03, E-04A) ---
+const { DatabaseSync: CounterDb } = require('node:sqlite');
+
+function counterDb(t, rows) {
+    const file = tmpFile();
+    const db = new CounterDb(file);
+    db.exec('CREATE TABLE deployments (env TEXT NOT NULL, sha TEXT NOT NULL, deployed_at TEXT NOT NULL)');
+    const insert = db.prepare('INSERT INTO deployments (env, sha, deployed_at) VALUES (?, ?, ?)');
+    for (const [env, age] of rows) insert.run(env, 'sha', new Date(Date.now() - age).toISOString());
+    db.close();
+    t.after(() => fs.rmSync(file, { force: true }));
+    return file;
+}
+const HOUR = 3600e3;
+const pageOf = async (t, options, query = '') => fetch((await start(t, options)) + '/' + query);
+
+test('GET / counts the deployments of the server env from the last 7 days (E-02A, E-03A)', async (t) => {
+    const db = counterDb(t, [['test', HOUR], ['test', 24 * HOUR], ['test', 8 * 24 * HOUR], ['prod', HOUR]]);
+    const html = await (await pageOf(t, { env: 'test', deploymentsDb: db })).text();
+    assert.match(html, /<p data-flag="deploy_counter">Wdrożenia w ostatnich 7 dniach: 2<\/p>/);
+});
+
+test('GET /?env=prod counts prod; an unknown env falls back to the server env (E-03B, E-03C, E-03D)', async (t) => {
+    const db = counterDb(t, [['test', HOUR], ['test', 2 * HOUR], ['prod', HOUR], ['prod', 2 * HOUR], ['prod', 3 * HOUR]]);
+    const options = { env: 'test', deploymentsDb: db };
+    assert.match(await (await pageOf(t, options, '?env=prod')).text(), /dniach: 3</);
+    const staging = await pageOf(t, options, '?env=staging');
+    assert.equal(staging.status, 200);
+    const text = await staging.text();
+    assert.match(text, /dniach: 2</);
+    assert.doesNotMatch(text, /staging/);
+    const xss = await pageOf(t, options, '?env=' + encodeURIComponent('<xss>'));
+    assert.equal(xss.status, 200);
+    assert.doesNotMatch(await xss.text(), /<xss>/);
+});
+
+test('GET / counts more than 100 deployments (E-02D)', async (t) => {
+    const db = counterDb(t, Array.from({ length: 150 }, (_, i) => ['test', (i + 1) * 60e3]));
+    assert.match(await (await pageOf(t, { env: 'test', deploymentsDb: db })).text(), /dniach: 150</);
+});
+
+test('GET / shows 0 when the database file is missing (E-04A, E-02C)', async (t) => {
+    const res = await pageOf(t, { env: 'test', deploymentsDb: '/nonexistent/deployments.db' });
+    assert.match(await res.text(), /dniach: 0</);
+});
+
+test('flag off (prod): no counter and the database is not opened (E-02B, E-02E)', async (t) => {
+    const bad = tmpFile('not a database\n'.repeat(200));
+    t.after(() => fs.rmSync(bad, { force: true }));
+    const res = await pageOf(t, { env: 'prod', deploymentsDb: bad });
+    assert.equal(res.status, 200);
+    assert.doesNotMatch(await res.text(), /deploy_counter/);
+});

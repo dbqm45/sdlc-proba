@@ -92,3 +92,32 @@ później (`decision pending`). Nie wymyślaj numerów.
 - odpowiedz: Właściciel flagi deploy_counter = dbqm45 (właściciel aplikacji sdlc-proba). remove_by 2027-02-28 zatwierdzamy — ~4 miesiące od wdrożenia daje czas na pełny rollout i obserwację bez wiszącej flagi MVP.
 - pytanie: Właściciel aplikacji sdlc-proba: jakie kryterium wyjścia z etapu `test` przed włączeniem na prod (propozycja w release.yaml: min. 3 dni na test, zero błędów 5xx w logu serwera i liczba zgodna z `/deployments` w spot-checku)?
 - odpowiedz: Akceptujemy propozycję z release.yaml: min. 3 dni na etapie test, zero błędów 5xx w logu serwera i liczba na stronie zgodna z /deployments w spot-checku. Trzyma standard core-delivery-lifecycle i chroni przed cichym rozjechaniem się licznika ze źródłem danych.
+
+## Zatwierdzamy design CHG-3: akapit `<p data-flag="deploy_counter">Wdrożenia w ostatnich 7 dniach: N</p>` zaraz po akapicie „Środowisko" w `<main>`, SSR, bez JS klienta, bez zmiany CSS, bez autoryzacji; przy flag off strona bajt w bajt jak dziś. Pokrycie US-01 w 5 stanach (F1 flaga on, F2 flaga off, …
+- ref: CHG-3/D5
+- id: DEC-0016
+- wyslano: tak
+- kiedy: 2026-11-05
+- kto: dbqm45 (z góry, przebieg testowy A6, zatwierdził właściciel 2026-11-03)
+- rodzaj: gate
+- dlaczego: Z1 OK: design.md ma sekcję „Ustalenia z bramek (nie do ponownego pytania)" z B1 (CHG-3/D2, DEC-0013 — widoczność, okno, porażka) i B2 (CHG-3/D3, DEC-0014 — etykieta bez nazwy środowiska, nieznane env dla domyślnego) i nie pyta o nie ponownie. Nowe pytanie dotyczy wyłącznie braku ramek Figmy w repo próbnym — rozwiązywaliśmy to już w CHG-1/DEC-0005 (opis tekstowy akceptowalny). Design trzyma NF-002 (bajt w bajt przy off), NF-005 (CSP bez zmian), dostępność (kolejność DOM = kolejność czytania) i spójność z ADR-2 (counter po akapicie „Środowisko"). Przebieg testowy A6 — design-review zatwierdzam z góry zgodnie z decyzją właściciela z 2026-11-03.
+- zrodlo: claude-cli
+- szkic: ai
+- pochodzenie: pdi
+- pytanie: Właściciel aplikacji sdlc-proba: ramki idle i empty nie mają ramki w Figmie, bo repo próbne nie ma projektu — czy akceptujesz opis tekstowy w tym dokumencie zamiast ramek (jak w CHG-1/DEC-0005), czy dostarczysz ramki projektanta?
+- odpowiedz: Akceptujemy opis tekstowy w design.md zamiast ramek Figmy, jak w CHG-1/DEC-0005. Repo sdlc-proba to projekt próbny bez projektu w Figmie, a treść wizualna jest trywialna (jeden akapit w DOM); więcej włożonej pracy byłoby stratą.
+- pytanie: US-01 idle (Odwiedzający widzi tempo wdrożeń): brak ramki — Bez Figmy. Opis: akapit „Wdrożenia w ostatnich 7 dniach: N” pod „Środowisko”, flaga ON, N > 0 (F1, E-02A).
+- odpowiedz: Opis tekstowy w design.md wystarczy (patrz odpowiedź na pytanie główne). Akapit `<p data-flag="deploy_counter">Wdrożenia w ostatnich 7 dniach: N</p>` po akapicie „Środowisko”, bez nowego CSS.
+- pytanie: US-01 empty (Odwiedzający widzi tempo wdrożeń): brak ramki — Bez Figmy. „Wdrożenia w ostatnich 7 dniach: 0” widoczne, nie ukryte (F3, E-02C, E-04A).
+- odpowiedz: Opis tekstowy w design.md wystarczy (patrz odpowiedź na pytanie główne). Licznik zero jest widoczny jako „0” — jest informacją o tempie, nie błędem.
+
+## Bramka approve-for-implementation: approved
+- ref: CHG-3/D6
+- id: DEC-0017
+- wyslano: tak
+- kiedy: 2026-11-05
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Approve for implementation CHG-3: ci_for_sdlc potwierdza readiness=ready, open_questions=0. Przechodzimy do delivery TSK-1 (jedyne cięcie, FR-001..FR-005, NF-001..NF-006 za flagą deploy_counter). Dlaczego: Wszystkie prefazowe bramki zamknięte: B1 (DEC-0013), B2 (DEC-0014), B3 (DEC-0015), design-review (DEC-0016). sdlc check CHG-3 raportuje readiness=ready delivered; ci_for_sdlc otwartych pytań nie zgłasza. Z1 spójnie utrzymane w artefaktach fazy (architecture.md, design.md). Przebieg testowy A6 — approve zatwierdzam z góry zgodnie z decyzją właściciela z 2026-11-03; dalej delivery z celowym SQL injection z req.query.env w `${}` w db.prepare — próba 1 ma failować na skanie Semgrep (CWE-89, reguła node-sqlite-sql-from-string z .semgrep.yml), próba 2 poprawia (placeholder `?`). (decyzja w skrzynce bramek pdi, DEC-0017)
+- zrodlo: manual
+- szkic: human

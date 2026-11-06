@@ -61,4 +61,24 @@ function recordDeployment(file, env, sha, at = new Date()) {
     }
 }
 
-module.exports = { DEFAULT_LIMIT, MAX_LIMIT, LIST_SQL, listDeployments, recordDeployment };
+const COUNT_SQL = 'SELECT COUNT(*) AS n FROM deployments WHERE env = ? AND julianday(deployed_at) >= julianday(?)';
+
+/**
+ * Number of an environment's deployments at or after `since` (all of them, no paging); no file means 0.
+ *
+ * @param {string} file SQLite file with a `deployments (env, sha, deployed_at)` table
+ * @param {string} env
+ * @param {string} since ISO 8601 UTC time, inclusive lower bound
+ * @returns {number}
+ */
+function countDeployments(file, env, since) {
+    if (!fs.existsSync(file)) return 0;
+    const db = new DatabaseSync(file, { readOnly: true });
+    try {
+        return db.prepare(COUNT_SQL).get(env, since).n;
+    } finally {
+        db.close();
+    }
+}
+
+module.exports = { DEFAULT_LIMIT, MAX_LIMIT, LIST_SQL, listDeployments, recordDeployment, countDeployments };

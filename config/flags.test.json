@@ -1,1 +1,1 @@
-{ "welcome_banner": { "enabled": true, "rollout": 100 }, "show_last_deployed": { "enabled": true, "rollout": 100 } }
+{ "welcome_banner": { "enabled": true, "rollout": 100 }, "show_last_deployed": { "enabled": true, "rollout": 100 }, "deploy_counter": { "enabled": true, "rollout": 100 } }
