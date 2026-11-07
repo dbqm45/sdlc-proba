@@ -1,0 +1,12 @@
+{
+  "status": "unavailable",
+  "reason": "no_api_key",
+  "provider": null,
+  "model": null,
+  "same_vendor": false,
+  "cost_usd": 0.0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "findings": [],
+  "run_at": "2026-11-07T15:00:04Z"
+}
