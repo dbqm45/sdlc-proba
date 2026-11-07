@@ -62,3 +62,14 @@ później (`decision pending`). Nie wymyślaj numerów.
 - odpowiedz: Właściciel aplikacji (dbqm45): przegląd zgłoszeń z 4 tygodni po włączeniu; sukces to zero pomyłek środowiska.
 - pytanie: Właściciel aplikacji sdlc-proba: kiedy ta zmiana jest porażką, nawet jeśli znacznik działa (np. widoczny publicznie na prod, zasłania treść, testerzy nadal się mylą)?
 - odpowiedz: Gdy przy wyłączonej fladze strona nie jest identyczna jak dziś albo kontrast spadnie poniżej 4,5:1.
+
+## Bramka B2: approved
+- ref: CHG-4/D3
+- id: DEC-0020
+- wyslano: tak
+- kiedy: 2026-11-07
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Wymagania CHG-4 (FR-001–FR-005, wymagania jakości) przyjęte bez zmian jako podstawa architektury. Dlaczego: Wymagania pokrywają wariant B z DEC-0019 (znacznik TEST/PROD, prefiks w <title>, flaga env_badge), mają sprawdzalne kryteria porażki (strona bez zmian przy wyłączonej fladze, kontrast ≥ 4,5:1) i nie zostawiają otwartych pytań. (decyzja w skrzynce bramek pdi, DEC-0020)
+- zrodlo: manual
+- szkic: human
