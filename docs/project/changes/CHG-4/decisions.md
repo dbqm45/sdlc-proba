@@ -45,3 +45,20 @@ później (`decision pending`). Nie wymyślaj numerów.
 - dlaczego: Przyjmujemy PRB-36: niewidoczne środowisko na stronie sdlc-sandbox jest problemem do rozwiązania. Dlaczego: Codzienne pomyłki testerów przy raportowaniu błędów (prod vs test) mają realny wpływ na jakość zgłoszeń; zgłoszenie spełnia kryteria przyjęcia. (decyzja w skrzynce bramek pdi, DEC-0018)
 - zrodlo: manual
 - szkic: human
+
+## Bramka B1: approved
+- ref: CHG-4/D2
+- id: DEC-0019
+- wyslano: tak
+- kiedy: 2026-11-07
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Zatwierdzam intencję CHG-4: wariant B (znaczniki TEST/PROD) z prefiksem w <title>, za flagą env_badge. Dlaczego: Problem z PRB-36 to słaba widoczność środowiska; wariant B rozwiązuje ją na obu środowiskach, tekst nie zależy od koloru. (decyzja w skrzynce bramek pdi, DEC-0019)
+- zrodlo: manual
+- szkic: human
+- pytanie: Właściciel aplikacji sdlc-proba: czy na produkcji ma być widoczny znacznik „PROD" (wariant B), czy prod ma zostać bez znacznika, jak proponuje zgłaszający (wariant A)?
+- odpowiedz: Tak, wariant B: znacznik TEST i PROD w różnych kolorach, tekst jest nośnikiem znaczenia; plus prefiks w <title>.
+- pytanie: Właściciel aplikacji sdlc-proba: kto i jak zmierzy spadek pomyłek środowiska w zgłoszeniach błędów (źródło liczb przed i po, okres pomiaru) i jaki próg uznajecie za sukces?
+- odpowiedz: Właściciel aplikacji (dbqm45): przegląd zgłoszeń z 4 tygodni po włączeniu; sukces to zero pomyłek środowiska.
+- pytanie: Właściciel aplikacji sdlc-proba: kiedy ta zmiana jest porażką, nawet jeśli znacznik działa (np. widoczny publicznie na prod, zasłania treść, testerzy nadal się mylą)?
+- odpowiedz: Gdy przy wyłączonej fladze strona nie jest identyczna jak dziś albo kontrast spadnie poniżej 4,5:1.

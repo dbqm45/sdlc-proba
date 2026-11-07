@@ -1,7 +1,7 @@
 <!-- WYGENEROWANO przez .claude/hooks/project_record.py — nie edytuj ręcznie -->
 # Dziennik projektu
 
-**Bieżąca faza:** Plan  ·  **Do akceptacji:** 9  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
+**Bieżąca faza:** Plan  ·  **Do akceptacji:** 10  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
 
 | Faza | Artefakt | Status | Wersja | Autor | Aktualizacja | TL;DR |
 |---|---|---|---|---|---|---|
@@ -10,6 +10,7 @@
 | Odkrywanie | [Zamiar zmiany CHG-4](changes/CHG-4/intent.md) | proposed | 1 | pdi | 2026-11-07 | Środowisko jest dziś na stronie tylko w zwykłym wierszu „Środowisko: test/prod", więc testerzy go nie zauważają. |
 | Wymagania | [Wymagania zmiany CHG-1](changes/CHG-1/requirements.md) | proposed | 1 | ewa | 2026-10-30 |  |
 | Wymagania | [Wymagania zmiany CHG-3](changes/CHG-3/requirements.md) | proposed | 1 | ewa | 2026-11-03 | Strona główna pokazuje „Wdrożenia w ostatnich 7 dniach: N" za flagą `deploy_counter` (test: on, prod: off). |
+| Wymagania | [Wymagania zmiany CHG-4](changes/CHG-4/requirements.md) | proposed | 1 | ewa | 2026-11-07 | Strona główna pokazuje w nagłówku znacznik środowiska („TEST" albo „PROD", w różnych kolorach) i ma `<title>` |
 | Architektura i stack | [Projekt zmiany CHG-1](changes/CHG-1/design.md) | proposed | 2 | natalia | 2026-10-31 |  |
 | Architektura i stack | [Architektura zmiany CHG-3](changes/CHG-3/architecture.md) | proposed | 1 | tomasz | 2026-11-03 | Licznik wdrożeń liczy serwer: nowa funkcja `countDeployments` w `src/deployments.js` (jedno zapytanie `COUNT` |
 | Plan | [Decyzje zmiany CHG-1](changes/CHG-1/decisions.md) | draft | 1 | pdi | 2026-10-31 |  |
