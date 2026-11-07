@@ -73,3 +73,20 @@ później (`decision pending`). Nie wymyślaj numerów.
 - dlaczego: Wymagania CHG-4 (FR-001–FR-005, wymagania jakości) przyjęte bez zmian jako podstawa architektury. Dlaczego: Wymagania pokrywają wariant B z DEC-0019 (znacznik TEST/PROD, prefiks w <title>, flaga env_badge), mają sprawdzalne kryteria porażki (strona bez zmian przy wyłączonej fladze, kontrast ≥ 4,5:1) i nie zostawiają otwartych pytań. (decyzja w skrzynce bramek pdi, DEC-0020)
 - zrodlo: manual
 - szkic: human
+
+## Bramka B3: approved
+- ref: CHG-4/D4
+- id: DEC-0021
+- wyslano: tak
+- kiedy: 2026-11-07
+- kto: pdi
+- rodzaj: gate
+- dlaczego: Plan CHG-4 przyjęty: opcja A (znacznik i prefiks <title> renderowane na serwerze za flagą env_badge), jedno cięcie TSK-1 w R1, cel: pokrycie zmienionych linii ≥ 90%, bez progów mutacji i wydajności. Dlaczego: Opcja A spełnia ograniczenia z architecture.md (flaga off = strona bez zmian, brak JS klienta, CSP bez zmian, brak nowych zależności); B łamie zakaz JS klienta, C dubluje szablon. Zmiana to kilka linii renderowania, więc jedno cięcie i próg pokrycia wystarczą. Drugi przegląd planu nie odbył się (brak klucza API) — zatwierdzam na podstawie własnego przeglądu. (decyzja w skrzynce bramek pdi, DEC-0021)
+- zrodlo: manual
+- szkic: human
+- pytanie: Właściciel aplikacji sdlc-proba: kto jest właścicielem flagi `env_badge` (decyduje o przejściu etapów rolloutu, w tym o włączeniu znacznika na prod) i czy `remove_by: 2027-03-31` w release.yaml (propozycja Tomasza) jest właściwą datą usunięcia flagi?
+- odpowiedz: Właściciel flagi env_badge: dbqm45. remove_by: 2027-03-31 — akceptuję.
+- pytanie: Właściciel aplikacji sdlc-proba: jakie kryterium wyjścia z etapu `test` przed włączeniem na prod (propozycja w release.yaml: min. 3 dni na test, znacznik „TEST” widoczny, `<title>` z prefiksem, zero błędów 5xx w logu serwera)?
+- odpowiedz: Akceptuję propozycję: min. 3 dni na test, znacznik „TEST” i prefiks [TEST] w <title> widoczne, zero błędów 5xx w logu serwera. Włączenie na prod osobną zmianą po mojej decyzji.
+- pytanie: Właściciel aplikacji sdlc-proba: czy akceptujecie brak progu testów mutacyjnych (ADR-3, powód: StrykerJS to nowa zależność wbrew DL4), a jako jedyny próg jakości kodu pokrycie zmienionych linii ≥ 90%?
+- odpowiedz: Akceptuję brak progu mutacji (ADR-3: StrykerJS to nowa zależność wbrew DL4). Jedyny próg jakości kodu: pokrycie zmienionych linii ≥ 90%, sprawdzane z raportu node --test --experimental-test-coverage.
