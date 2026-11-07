@@ -56,7 +56,8 @@
       "Bash(python3 .claude/skills/ddd-event-storming/scripts/es_board.py *)",
       "Bash(python3 .claude/skills/proc-requirements-shaping/scripts/requirements_lint.py *)",
       "Bash(python3 .claude/tests/test_es_sim.py)",
-      "Bash(git switch *)"
+      "Bash(git switch *)",
+      "Bash(python3 .claude/skills/pdi-decisions/scripts/second_review.py *)"
     ],
     "ask": [
       "Bash(git push *)",

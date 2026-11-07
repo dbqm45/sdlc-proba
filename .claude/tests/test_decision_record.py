@@ -149,10 +149,12 @@ def main() -> int:
             r = run(["check"], tmp)
             check(r.returncode != 0, f"D-13 check wykrywa: {label} ({r.stdout.strip()[:200]})")
     with tempfile.TemporaryDirectory() as tmp:
+        # Plan w statusie innym niż draft (Z7b-1a, DZ6, DZ7, N20) musi mieć sekcje „Rozważone opcje” i „Cele zmiany”.
         write(Path(tmp) / "docs" / "project" / "changes" / "CHG-1" / "plan.md",
               "artifact: plan\nphase: plan\nstatus: accepted\nversion: 2\nauthor: x\ncreated: 2026-10-23\n"
               "updated: 2026-10-24\ninputs: [docs/project/changes/CHG-1/intent.md]\nchange: CHG-1\nsource: PRB-3\n"
-              "tasks: [TSK-57, TSK-58]")
+              "tasks: [TSK-57, TSK-58]",
+              "## Rozważone opcje\n\n### Opcja A\n\n### Opcja B\n\n## Cele zmiany (targets)\n\n")
         r = run(["check"], tmp)
         check(r.returncode == 0, f"D-14: poprawny plan (przykład z kontraktu) przechodzi: {r.stdout}{r.stderr}")
         r = run(["check"], Path(tmp) / "docs")
@@ -347,6 +349,40 @@ def main() -> int:
         r = run(["check"], tmp)
         check(r.returncode == 0, f"R-8: zmiana sprzed G1.1 (bez release.yaml) nadal przechodzi: {r.stdout}")
 
+    # Z7b-1a (DZ6, DZ7, N20): plan niebędący szkicem potrzebuje sekcji „Rozważone opcje” (≥2) i „Cele zmiany”.
+    head_accepted = ("artifact: plan\nphase: plan\nstatus: accepted\nversion: 1\ncreated: 2026-10-23\n"
+                     "updated: 2026-10-23\nchange: CHG-5\ntasks: [TSK-1]")
+    head_draft = ("artifact: plan\nphase: plan\nstatus: draft\nversion: 1\ncreated: 2026-10-23\n"
+                  "updated: 2026-10-23\nchange: CHG-5\ntasks: [TSK-1]")
+    body_two = "## Rozważone opcje\n\n### Opcja A\nPlusy.\n### Opcja B\nPlusy.\n\n## Cele zmiany (targets)\n\n"
+    body_one = "## Rozważone opcje\n\n### Opcja A\nPlusy.\n\n## Cele zmiany (targets)\n\n"
+    body_no_targets = "## Rozważone opcje\n\n### Opcja A\nPlusy.\n### Opcja B\nPlusy.\n\n"
+    with tempfile.TemporaryDirectory() as tmp:
+        write(Path(tmp) / "docs" / "project" / "changes" / "CHG-5" / "plan.md", head_accepted, body_two)
+        r = run(["check"], tmp)
+        check(r.returncode == 0, f"Z-1: plan accepted z dwiema opcjami i celami przechodzi: {r.stdout}")
+    with tempfile.TemporaryDirectory() as tmp:
+        write(Path(tmp) / "docs" / "project" / "changes" / "CHG-5" / "plan.md", head_accepted, body_one)
+        r = run(["check"], tmp)
+        check(r.returncode != 0 and "co najmniej dwóch" in r.stdout,
+              f"Z-2: plan z jedną opcją dostaje ustalenie: {r.stdout}")
+    with tempfile.TemporaryDirectory() as tmp:
+        write(Path(tmp) / "docs" / "project" / "changes" / "CHG-5" / "plan.md", head_accepted,
+              "## Cele zmiany (targets)\n\n")
+        r = run(["check"], tmp)
+        check(r.returncode != 0 and "Rozważone opcje" in r.stdout,
+              f"Z-3: plan bez sekcji „Rozważone opcje” dostaje ustalenie: {r.stdout}")
+    with tempfile.TemporaryDirectory() as tmp:
+        write(Path(tmp) / "docs" / "project" / "changes" / "CHG-5" / "plan.md", head_accepted, body_no_targets)
+        r = run(["check"], tmp)
+        check(r.returncode != 0 and "Cele zmiany" in r.stdout,
+              f"Z-4: plan bez sekcji „Cele zmiany” dostaje ustalenie: {r.stdout}")
+    with tempfile.TemporaryDirectory() as tmp:
+        # Szkic (`draft`) nie musi mieć nowych sekcji — architekt je dopisuje zanim status przejdzie dalej.
+        write(Path(tmp) / "docs" / "project" / "changes" / "CHG-5" / "plan.md", head_draft, "")
+        r = run(["check"], tmp)
+        check(r.returncode == 0, f"Z-5: szkic planu bez nowych sekcji przechodzi: {r.stdout}")
+
     # decision gate: decyzja z bramki w pdi (gate.decided) zapisana w repo z numerem z rejestru (F4, D2/R1)
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp)
@@ -406,7 +442,7 @@ def main() -> int:
         r = run(["check"], repo)
         check(r.returncode != 0 and "source_reported_at" in r.stdout, f"S-5: zła data w nagłówku → check: {r.stdout}")
 
-    # Z1 (PRB-3): odpowiedzi na pytania bramki i decyzje zmiany z rejestru pdi (kontrakt pdi 0.11.0)
+    # Z1 (PRB-3): odpowiedzi na pytania bramki i decyzje zmiany z rejestru pdi (kontrakt pdi 0.12.0)
     with tempfile.TemporaryDirectory() as tmp:
         repo = Path(tmp)
         run(["change", "new", "CHG-12"], repo)
@@ -476,7 +512,7 @@ def main() -> int:
         r = run(["check"], repo)
         check(r.returncode != 0 and "parami" in r.stdout, f"Z1-12: pytanie bez odpowiedzi → check: {r.stdout}")
 
-    # Kontrakt pdi 0.11.0: decision.schema.json (kopia z tagu) zgodny z tym, co dziennik zapisuje i importuje
+    # Kontrakt pdi 0.12.0: decision.schema.json (kopia z tagu) zgodny z tym, co dziennik zapisuje i importuje
     import importlib.util
     spec = importlib.util.spec_from_file_location("decision_record", SCRIPT)
     drec = importlib.util.module_from_spec(spec)

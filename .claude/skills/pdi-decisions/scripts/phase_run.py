@@ -13,7 +13,7 @@ Fazy zmiany uruchamiane przez pdi (tryb mode-pdi, F4): persona pracuje bez inter
       który powtarza pytanie już rozstrzygnięte w decisions.md, kończy fazę błędem `repeated_question` (Z1, PRB-3)
   python3 .claude/skills/pdi-decisions/scripts/phase_run.py gate request --change CHG-12 (--phase P | --gate G) \\
       [--summary "…"] [--url https://…/pull/7] [--dry-run]
-      gate.requested (kontrakt pdi 0.11.0) na $PDI_EVENTS_URL/events/tf, podpis z $PDI_TF_SIGNING_SECRET;
+      gate.requested (kontrakt pdi 0.12.0) na $PDI_EVENTS_URL/events/tf, podpis z $PDI_TF_SIGNING_SECRET;
       odmawia, gdy artefakt powtarza rozstrzygnięte pytanie
   python3 .claude/skills/pdi-decisions/scripts/phase_run.py cuts list
       JSON z lokalnymi gałęziami cięć story/* — zapis przed fazą delivery
@@ -50,9 +50,15 @@ OVERRIDES = Path(".claude") / "pdi-phases.json"
 TEMPLATE = Path(__file__).resolve().parent.parent / "templates" / "sdlc-phase.yml"
 WORKFLOW = Path(".github") / "workflows" / "sdlc-phase.yml"
 SCRIPTS = ".claude/skills/pdi-decisions/scripts"
-CONTRACT_VERSION = "0.11.0"
+CONTRACT_VERSION = "0.12.0"
 LOCAL_HOSTS = ("127.0.0.1", "localhost", "::1")
 QUESTIONS = "Pytania do bramki"
+# Drugi przegląd (N1, DZ12): sidecar z second_review.py obok artefaktu fazy; fazy, dla których go szukamy.
+SECOND_REVIEW_PHASES = ("requirements", "architecture")
+SECOND_REVIEW_DIR = ".review"
+# Ustalenia tej wagi dopisujemy do pytań bramki; minor/info lądują tylko w artefakcie (nie blokują B2/B3).
+BLOCKING_SEVERITIES = ("blocker", "major")
+REVIEW_QUESTION_PREFIX = "[drugi przegląd] "
 # Pola zgłoszenia z pdi (contract/problem.schema.json), które trafiają do promptu fazy intent.
 PROBLEM_FIELDS = {"title": "tytuł", "kind": "rodzaj", "who": "kto ma problem", "cannot": "czego nie może zrobić",
                   "impact": "skutek", "workaround": "jak radzi sobie dziś", "frequency": "jak często"}
@@ -301,9 +307,12 @@ def missing_input(change: str, phase: str) -> str | None:
 
 
 def cmd_run(a) -> int:
+    # stream-json wymaga --print i --verbose (code.claude.com/docs/en/cli-reference, odczyt 2026-11-06);
+    # końcowe zdarzenie `result` ma pola total_cost_usd, is_error, subtype, result.{type,text}, permission_denials,
+    # usage, duration_ms, session_id (code.claude.com/docs/en/agent-sdk/typescript, odczyt 2026-11-06).
     p = build_prompt(a)
-    argv = [os.environ.get("PDI_CLAUDE_BIN") or "claude", "--print", "--output-format", "json", "--agent",
-            p["persona"], "--permission-mode", "acceptEdits"]
+    argv = [os.environ.get("PDI_CLAUDE_BIN") or "claude", "--print", "--verbose", "--output-format", "stream-json",
+            "--agent", p["persona"], "--permission-mode", "acceptEdits"]
     budget = budget_of(a.budget_usd)
     if budget:
         argv += ["--max-budget-usd", budget]
@@ -324,40 +333,66 @@ def cmd_run(a) -> int:
                           "bo talos zgadywałby odpowiedź (PRB-3): " + "; ".join(f"„{q}”" for q in open_qs)
                           + ". Odpowiedz na nie przy bramce w pdi (answers w decide_inbox_item) albo usuń je z plan.md "
                           "poprawkami fazy architecture.")
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import phase_progress
+    relay = phase_progress.ProgressRelay(change=a.change, phase=a.phase,
+                                         budget_usd=float(budget) if budget else None)
     try:
-        r = subprocess.run([*argv, p["prompt"]], capture_output=True, text=True)
+        process = subprocess.Popen([*argv, p["prompt"]], stdin=subprocess.DEVNULL,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                   text=True, bufsize=1)
     except OSError as e:
         raise Refused(f"nie da się uruchomić {argv[0]} ({e.strerror}) — zainstaluj Claude Code albo ustaw PDI_CLAUDE_BIN") from e
-    try:
-        result = json.loads(r.stdout or "{}")
-    except ValueError:
-        result = {}
+    raw_lines: list[str] = []
+    assert process.stdout is not None  # subprocess.PIPE
+    for line in process.stdout:
+        line = line.rstrip("\n")
+        if not line:
+            continue
+        raw_lines.append(line)
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue  # linia niejsonowa — pdi hostowa też ją zignoruje
+        for row in relay.handle(event):
+            if phase_progress.is_valid_progress(row):
+                print(phase_progress.format_line(row))
+    code = process.wait()
+    stderr_text = process.stderr.read() if process.stderr else ""
+    result = relay.last_result or {}
     cost = result.get("total_cost_usd") if isinstance(result, dict) else None
-    failed = r.returncode != 0 or not isinstance(result, dict) or result.get("is_error") or not result
+    failed = code != 0 or not isinstance(result, dict) or result.get("is_error") or not result
     status = "failed" if failed else ("waiting_gate" if p["gate"] else "done")
     out.update(status=status, cost_usd=cost)
     # PRB-28: `detail` i `permission_denials` w wyniku też na sukcesie — bez tego diagnoza failed delivery
-    # (pdi A6 2026-11-04 CHG-3 na sdlc-proba) nie ma odpowiedzi persony i listy odmów. Pole `permission_denials`
-    # wg Agent SDK ResultMessage (code.claude.com/docs/en/agent-sdk/python, odczyt 2026-11-05).
+    # (pdi A6 2026-11-04 CHG-3 na sdlc-proba) nie ma odpowiedzi persony i listy odmów. Kształt `result` w stream-JSON:
+    # pole `result: {type, text}` (code.claude.com/docs/en/agent-sdk/typescript, odczyt 2026-11-06); starsze testy
+    # i output-format json podają `result` jako string — oba obsługuje `phase_progress.result_text`.
     if isinstance(result, dict):
-        tail = result.get("result")
-        if tail:
-            out["detail"] = str(tail)[-DETAIL_MAX:]
+        text = phase_progress.result_text(result.get("result"))
+        if text:
+            out["detail"] = text[-DETAIL_MAX:]
         denials = result.get("permission_denials")
         if denials:
             out["permission_denials"] = denials
     if failed:
-        out["error"] = (result.get("subtype") if isinstance(result, dict) and result else None) or f"kod {r.returncode}"
-        out["exit_code"] = r.returncode
-        if "detail" not in out:                        # brak JSON-a w stdout → surowy stdout
-            out["detail"] = (r.stdout or "")[-DETAIL_MAX:] or None
-        out["stderr"] = (r.stderr or "")[-DETAIL_MAX:] or None
+        out["error"] = (result.get("subtype") if isinstance(result, dict) and result else None) or f"kod {code}"
+        out["exit_code"] = code
+        if "detail" not in out:                        # brak zdarzenia result → surowe linie stdout bez PDI-PROGRESS
+            tail = "\n".join(ln for ln in raw_lines if not ln.startswith(phase_progress.PREFIX))[-DETAIL_MAX:]
+            out["detail"] = tail or None
+        out["stderr"] = (stderr_text or "")[-DETAIL_MAX:] or None
     repeats = repeated(a.change, Path(p["artifact"])) if p["artifact"] and not failed else []
     if repeats:   # persona skończyła, ale artefakt pyta o to, co już rozstrzygnięto (Z1, PRB-3)
         failed = True
         out.update(status="failed", error="repeated_question", repeated=repeats,
                    detail=f"{p['artifact']} powtarza w `## {QUESTIONS}` pytania już rozstrzygnięte w decisions.md: "
                           + "; ".join(repeats) + ". Usuń je z artefaktu (zapisz ustalenie z odwołaniem) i ponów fazę.")
+    # Końcowa linia postępu (waiting_gate / done / failed) z kosztem z last_result.
+    final_message = result.get("subtype") if isinstance(result, dict) and failed else p["gate"] or None
+    final_row = relay.emit_final(status=out["status"], message=final_message)
+    if phase_progress.is_valid_progress(final_row):
+        print(phase_progress.format_line(final_row))
     print(json.dumps(out, ensure_ascii=False, indent=2))
     return 1 if failed else 0
 
@@ -385,6 +420,59 @@ def design_problems(path: Path) -> list[str]:
         return [f"design.md: {e}"]
 
 
+def second_review_sidecar(change: str, phase: str) -> dict | None:
+    """Wynik drugiego przeglądu (second_review.py artifact) z docs/project/changes/<CHG>/.review/<phase>.json."""
+    f = CHANGES / change / SECOND_REVIEW_DIR / f"{phase}.json"
+    if not f.is_file():
+        return None
+    try:
+        return json.loads(f.read_text(encoding="utf-8"))
+    except ValueError:
+        return None
+
+
+def second_review_questions(sidecar: dict) -> list[str]:
+    """Blokujące ustalenia drugiego przeglądu jako pytania do bramki; contradiction z `settled_ref` idzie z prefiksem."""
+    out = []
+    for f in sidecar.get("findings") or []:
+        if f.get("kind") == "contradiction" and f.get("settled_ref"):
+            prefix = f"[sprzeczne z {f['settled_ref']}] "
+            out.append(prefix + (f.get("reason") or "").strip())
+            continue
+        if f.get("severity") not in BLOCKING_SEVERITIES:
+            continue
+        if f.get("settled_ref"):   # rozstrzygnięte pytanie, które nie jest contradiction — nie wraca do bramki
+            continue
+        reason = (f.get("reason") or "").strip()
+        quote = (f.get("quote") or "").strip()
+        text = REVIEW_QUESTION_PREFIX + reason + (f" — cytat: „{quote}”" if quote else "")
+        out.append(text)
+    return out
+
+
+def second_review_summary(sidecar: dict | None, phase: str) -> dict:
+    """Streszczenie do payload['second_review']. Dla fazy wymagającej przeglądu brak sidecara → unavailable/not_run."""
+    if sidecar is None:
+        if phase in SECOND_REVIEW_PHASES:
+            return {"status": "unavailable", "reason": "not_run"}
+        return {}
+    findings = sidecar.get("findings") or []
+    blocking = sum(1 for f in findings
+                   if f.get("severity") in BLOCKING_SEVERITIES and not f.get("settled_ref"))
+    contradictions = sum(1 for f in findings if f.get("kind") == "contradiction" and f.get("settled_ref"))
+    out = {"status": sidecar.get("status") or "unavailable",
+           "provider": sidecar.get("provider"),
+           "model": sidecar.get("model"),
+           "same_vendor": bool(sidecar.get("same_vendor")),
+           "cost_usd": sidecar.get("cost_usd") or 0.0,
+           "findings_total": len(findings),
+           "blocking": blocking,
+           "contradictions": contradictions}
+    if sidecar.get("reason"):
+        out["reason"] = sidecar["reason"]
+    return out
+
+
 def gate_event(a) -> dict:
     d = change_dir(a.change)
     if a.phase:
@@ -398,6 +486,7 @@ def gate_event(a) -> dict:
     payload = {"change": a.change, "gate": gate,
                "summary": a.summary or (f"{a.change}: {art.name} gotowe do bramki {gate}" if art else
                                         f"{a.change}: prośba o bramkę {gate}")}
+    sidecar = second_review_sidecar(a.change, a.phase) if a.phase in SECOND_REVIEW_PHASES else None
     if art is not None and art.is_file():
         repeats = repeated(a.change, art)
         if repeats:
@@ -405,8 +494,13 @@ def gate_event(a) -> dict:
                           + "; ".join(repeats) + " — usuń je z artefaktu (zapisz ustalenie z odwołaniem) i ponów")
         payload["artifact"] = str(art)
         qs = questions_in(art) + (design_problems(art) if a.phase == "design" else [])
+        if sidecar and sidecar.get("status") == "ok":
+            qs = qs + second_review_questions(sidecar)
         if qs:
             payload["questions"] = qs
+    summary = second_review_summary(sidecar, a.phase)
+    if summary:
+        payload["second_review"] = summary
     if a.url:
         payload["url"] = a.url
     now = time.gmtime()
