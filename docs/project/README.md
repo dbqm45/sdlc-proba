@@ -1,7 +1,7 @@
 <!-- WYGENEROWANO przez .claude/hooks/project_record.py — nie edytuj ręcznie -->
 # Dziennik projektu
 
-**Bieżąca faza:** Plan  ·  **Do akceptacji:** 10  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
+**Bieżąca faza:** Plan  ·  **Do akceptacji:** 12  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
 
 | Faza | Artefakt | Status | Wersja | Autor | Aktualizacja | TL;DR |
 |---|---|---|---|---|---|---|
@@ -13,16 +13,17 @@
 | Wymagania | [Wymagania zmiany CHG-4](changes/CHG-4/requirements.md) | proposed | 1 | ewa | 2026-11-07 | Strona główna pokazuje w nagłówku znacznik środowiska („TEST" albo „PROD", w różnych kolorach) i ma `<title>` |
 | Architektura i stack | [Projekt zmiany CHG-1](changes/CHG-1/design.md) | proposed | 2 | natalia | 2026-10-31 |  |
 | Architektura i stack | [Architektura zmiany CHG-3](changes/CHG-3/architecture.md) | proposed | 1 | tomasz | 2026-11-03 | Licznik wdrożeń liczy serwer: nowa funkcja `countDeployments` w `src/deployments.js` (jedno zapytanie `COUNT` |
+| Architektura i stack | [Architektura zmiany CHG-4](changes/CHG-4/architecture.md) | proposed | 1 | tomasz | 2026-11-07 | Znacznik środowiska i prefiks `<title>` powstają w `renderPage` (`src/page.js`) z `env` serwera, tylko gdy `on('env_badge')`. |
 | Plan | [Decyzje zmiany CHG-1](changes/CHG-1/decisions.md) | draft | 1 | pdi | 2026-10-31 |  |
 | Plan | [Plan zmiany CHG-1](changes/CHG-1/plan.md) | proposed | 1 | tomasz | 2026-10-30 |  |
 | Plan | [Decyzje zmiany CHG-3](changes/CHG-3/decisions.md) | draft | 1 | pdi | 2026-11-03 |  |
 | Plan | [Plan zmiany CHG-3](changes/CHG-3/plan.md) | proposed | 1 | tomasz | 2026-11-03 | Jedno cięcie TSK-1 (R1 = MVP) za flagą `deploy_counter`: licznik „Wdrożenia w ostatnich 7 dniach: N” na stronie głównej. |
 | Plan | [Decyzje zmiany CHG-4](changes/CHG-4/decisions.md) | draft | 1 | pdi | 2026-11-07 |  |
-| Plan | [Plan zmiany CHG-4](changes/CHG-4/plan.md) | draft | 1 | pdi | 2026-11-07 |  |
+| Plan | [Plan zmiany CHG-4](changes/CHG-4/plan.md) | proposed | 1 | tomasz | 2026-11-07 | Jedno cięcie TSK-1 (R1 = MVP) za flagą `env_badge`: znacznik TEST/PROD w nagłówku i prefiks środowiska w `<title>`. |
 
-## Ostatnie przekazanie — z [changes/CHG-3/plan.md](changes/CHG-3/plan.md)
+## Ostatnie przekazanie — z [changes/CHG-4/plan.md](changes/CHG-4/plan.md)
 
-Następny krok: faza design (tylko etykieta i miejsce w `<main>`), potem delivery TSK-1 metodą TDD.
+Następny krok: faza design (wygląd znacznika: kolory, rozmiar, odstęp od `<h1>`), potem delivery TSK-1 metodą TDD.
 
 ## Ostatnie zdarzenia
 
