@@ -1,12 +1,13 @@
 <!-- WYGENEROWANO przez .claude/hooks/project_record.py — nie edytuj ręcznie -->
 # Dziennik projektu
 
-**Bieżąca faza:** Plan  ·  **Do akceptacji:** 8  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
+**Bieżąca faza:** Plan  ·  **Do akceptacji:** 9  ·  [Dziennik zdarzeń](journal.md)  ·  [Rejestr decyzji](decisions.md)
 
 | Faza | Artefakt | Status | Wersja | Autor | Aktualizacja | TL;DR |
 |---|---|---|---|---|---|---|
 | Odkrywanie | [Zamiar zmiany CHG-1](changes/CHG-1/intent.md) | proposed | 1 | pdi | 2026-10-30 |  |
 | Odkrywanie | [Zamiar zmiany CHG-3](changes/CHG-3/intent.md) | proposed | 1 | pdi | 2026-11-03 | Dodajemy na stronie głównej licznik „Wdrożenia w ostatnich 7 dniach: N" za flagą `deploy_counter` (off na prod na start). |
+| Odkrywanie | [Zamiar zmiany CHG-4](changes/CHG-4/intent.md) | proposed | 1 | pdi | 2026-11-07 | Środowisko jest dziś na stronie tylko w zwykłym wierszu „Środowisko: test/prod", więc testerzy go nie zauważają. |
 | Wymagania | [Wymagania zmiany CHG-1](changes/CHG-1/requirements.md) | proposed | 1 | ewa | 2026-10-30 |  |
 | Wymagania | [Wymagania zmiany CHG-3](changes/CHG-3/requirements.md) | proposed | 1 | ewa | 2026-11-03 | Strona główna pokazuje „Wdrożenia w ostatnich 7 dniach: N" za flagą `deploy_counter` (test: on, prod: off). |
 | Architektura i stack | [Projekt zmiany CHG-1](changes/CHG-1/design.md) | proposed | 2 | natalia | 2026-10-31 |  |
@@ -15,6 +16,8 @@
 | Plan | [Plan zmiany CHG-1](changes/CHG-1/plan.md) | proposed | 1 | tomasz | 2026-10-30 |  |
 | Plan | [Decyzje zmiany CHG-3](changes/CHG-3/decisions.md) | draft | 1 | pdi | 2026-11-03 |  |
 | Plan | [Plan zmiany CHG-3](changes/CHG-3/plan.md) | proposed | 1 | tomasz | 2026-11-03 | Jedno cięcie TSK-1 (R1 = MVP) za flagą `deploy_counter`: licznik „Wdrożenia w ostatnich 7 dniach: N” na stronie głównej. |
+| Plan | [Decyzje zmiany CHG-4](changes/CHG-4/decisions.md) | draft | 1 | pdi | 2026-11-07 |  |
+| Plan | [Plan zmiany CHG-4](changes/CHG-4/plan.md) | draft | 1 | pdi | 2026-11-07 |  |
 
 ## Ostatnie przekazanie — z [changes/CHG-3/plan.md](changes/CHG-3/plan.md)
 
