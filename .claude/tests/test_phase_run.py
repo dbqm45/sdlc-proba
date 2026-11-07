@@ -21,18 +21,26 @@ FIX = Path(__file__).resolve().parent / "fixtures" / "pdi-contract"
 SECRET = "sekret-tf"
 KEY_RE = r"^[A-Z][A-Z0-9]+-[0-9]+$"
 
+# Fejkowy `claude` w trybie stream-json: system init na start, opcjonalne zdarzenia, końcowy result;
+# zgodny ze stream-JSON Claude Code (code.claude.com/docs/en/headless, odczyt 2026-11-06).
 FAKE_CLAUDE = """import json, os, sys
 open(os.environ["FAKE_LOG"], "a").write(json.dumps(sys.argv[1:]) + "\\n")
 if os.environ.get("FAKE_STDERR"):
     sys.stderr.write(os.environ["FAKE_STDERR"])
+print(json.dumps({"type": "system", "subtype": "init", "session_id": "s", "model": "c"}))
+for line in os.environ.get("FAKE_EVENTS", "").split("\\x1e"):
+    if line.strip():
+        print(line)
+if not os.environ.get("FAKE_NO_RESULT"):
+    out = {"type": "result", "subtype": os.environ.get("FAKE_SUBTYPE", "success"),
+           "is_error": bool(os.environ.get("FAKE_ERROR")), "total_cost_usd": 0.42,
+           "result": {"type": "text", "text": os.environ.get("FAKE_RESULT", "gotowe")},
+           "usage": {}, "duration_ms": 1, "duration_api_ms": 1, "num_turns": 0,
+           "permission_denials": json.loads(os.environ["FAKE_DENIALS"]) if os.environ.get("FAKE_DENIALS") else [],
+           "session_id": "s"}
+    print(json.dumps(out))
 if os.environ.get("FAKE_EXIT"):
     sys.exit(int(os.environ["FAKE_EXIT"]))
-out = {"type": "result", "subtype": os.environ.get("FAKE_SUBTYPE", "success"),
-       "is_error": bool(os.environ.get("FAKE_ERROR")), "total_cost_usd": 0.42,
-       "result": os.environ.get("FAKE_RESULT", "gotowe")}
-if os.environ.get("FAKE_DENIALS"):
-    out["permission_denials"] = json.loads(os.environ["FAKE_DENIALS"])
-print(json.dumps(out))
 """
 
 
@@ -41,11 +49,28 @@ def run(args, cwd, **env):
                           env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1", **env})
 
 
+PDI_PROGRESS_PREFIX = "PDI-PROGRESS: "
+
+
 def jl(r):
+    """Końcowy obiekt JSON wyniku fazy ze stdout, ignorując linie `PDI-PROGRESS: ...`."""
+    text = "\n".join(line for line in (r.stdout or "").splitlines() if not line.startswith(PDI_PROGRESS_PREFIX))
     try:
-        return json.loads(r.stdout)
+        return json.loads(text) if text else None
     except ValueError:
         return None
+
+
+def progress_lines(r):
+    """Linie postępu (`PDI-PROGRESS: {json}`) ze stdout — jako lista słowników po parsowaniu."""
+    rows = []
+    for line in (r.stdout or "").splitlines():
+        if line.startswith(PDI_PROGRESS_PREFIX):
+            try:
+                rows.append(json.loads(line[len(PDI_PROGRESS_PREFIX):]))
+            except ValueError:
+                pass
+    return rows
 
 
 class Catch(BaseHTTPRequestHandler):
@@ -216,6 +241,41 @@ def main() -> int:
         res = jl(r) or {}
         check(r.returncode == 0 and "detail" in res and "permission_denials" not in res,
               f"R-28c: bez denials pole pominięte, detail jest: {r.stdout}")
+        # Z3-lokalnie (A7): stream-json i linie postępu `PDI-PROGRESS: ...` na stdout, obok końcowego JSON-a wyniku.
+        argv_last = [json.loads(x) for x in log.read_text().splitlines()][-1]
+        check("--output-format" in argv_last and argv_last[argv_last.index("--output-format") + 1] == "stream-json"
+              and "--verbose" in argv_last and "--print" in argv_last,
+              f"R-29: stream-json wymaga --print i --verbose: {argv_last}")
+        # Zdarzenia przed wynikiem zamieniają się w linie postępu.
+        events = chr(30).join([
+            json.dumps({"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Read", "id": "u1",
+                 "input": {"file_path": f"{repo}/docs/project/changes/CHG-12/intent.md"}}]}}),
+            json.dumps({"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Bash", "id": "u2", "input": {"command": "python3 x.py"}}]}}),
+        ])
+        r = run(["run", "--change", "CHG-12", "--phase", "requirements"], repo, FAKE_EVENTS=events, **env)
+        rows = progress_lines(r)
+        res = jl(r) or {}
+        check(res.get("status") == "waiting_gate",
+              f"R-30a: sukces zachowuje waiting_gate z liniami postępu: {r.stdout}")
+        statuses = [row.get("status") for row in rows]
+        check(statuses[:1] == ["started"]
+              and any(row.get("message", "").startswith("czyta plik docs/project/changes/CHG-12/intent.md") for row in rows)
+              and any(row.get("message") == "uruchamia polecenie" for row in rows)
+              and statuses[-1] == "waiting_gate",
+              f"R-30b: linie postępu: started → in_progress × 2 → waiting_gate; sekwencja: {rows}")
+        check(not any("python3" in row.get("message", "") for row in rows),
+              f"R-30c: polecenie Bash nigdy nie trafia do linii postępu: {rows}")
+        # Failed run → ostatnia linia postępu failed, wynik zachowuje error.
+        r = run(["run", "--change", "CHG-12", "--phase", "requirements"], repo, FAKE_ERROR="1",
+                FAKE_SUBTYPE="error_max_turns", FAKE_RESULT="limit", **env)
+        rows = progress_lines(r)
+        res = jl(r) or {}
+        check(res.get("status") == "failed" and rows and rows[-1].get("status") == "failed"
+              and rows[-1].get("message") == "error_max_turns"
+              and rows[-1].get("cost_usd") == 0.42,
+              f"R-30d: failed → końcowa linia failed z kosztem: {rows}; wynik: {res}")
         # PRB-12: design.md należy do fazy design (kontrakt pdi), architecture pisze ADR w architecture.md
         p = jl(run(["prompt", "--change", "CHG-12", "--phase", "architecture"], repo)) or {}
         check("design.md" not in p.get("prompt", "") and "architecture.md" in p.get("prompt", ""),
@@ -289,6 +349,65 @@ def main() -> int:
         r = run(["gate", "request", "--change", "CHG-12", "--phase", "requirements"], repo, **genv)
         check(r.returncode != 0 and "400" in r.stdout, f"G-12: odmowa pdi → błąd z kodem: {r.stdout}")
         Catch.status = 202
+
+        # --- N1: drugi przegląd (DZ12) — sidecar z second_review.py idzie do pytań bramki i do evenetu ---
+        review_dir = repo / "docs" / "project" / "changes" / "CHG-12" / ".review"
+        review_dir.mkdir(parents=True, exist_ok=True)
+        (review_dir / "requirements.json").write_text(json.dumps({
+            "status": "ok", "provider": "openai", "model": "gpt-4o-mini", "same_vendor": False,
+            "cost_usd": 0.004, "input_tokens": 1000, "output_tokens": 500,
+            "findings": [
+                {"severity": "blocker", "kind": "missing_error_state", "quote": "FR-1",
+                 "reason": "brak stanu dla pliku > limit"},
+                {"severity": "major", "kind": "unclear_acceptance", "quote": "FR-2",
+                 "reason": "brak przykładu Given/When/Then"},
+                {"severity": "minor", "kind": "other", "quote": "CSV", "reason": "warto dopisać format"},
+                {"severity": "major", "kind": "contradiction", "quote": "FR-3",
+                 "reason": "sprzeczne z decyzją D1", "settled_ref": "CHG-12/D1"},
+            ],
+            "run_at": "2026-11-06T10:00:00Z",
+        }), encoding="utf-8")
+        r = run(["gate", "request", "--change", "CHG-12", "--phase", "requirements"], repo, **genv)
+        pl = json.loads(Catch.got[-1]["body"]).get("payload", {})
+        review_qs = [q for q in pl.get("questions", []) if "[drugi przegląd]" in q or "[sprzeczne z CHG-12/D1]" in q]
+        check(r.returncode == 0
+              and any("[drugi przegląd]" in q and "stanu" in q for q in review_qs)
+              and any("[drugi przegląd]" in q and "Given/When/Then" in q for q in review_qs)
+              and any("[sprzeczne z CHG-12/D1]" in q for q in review_qs)
+              and all("minor" not in q for q in review_qs),
+              f"N1-1: blokujące (blocker, major) + contradiction trafiają do questions z prefiksem: {pl.get('questions')}")
+        sr = pl.get("second_review", {})
+        check(sr.get("status") == "ok" and sr.get("provider") == "openai"
+              and sr.get("blocking") == 2 and sr.get("contradictions") == 1
+              and sr.get("same_vendor") is False and sr.get("cost_usd") == 0.004,
+              f"N1-2: second_review w payload: status, blocking, contradictions, cost: {sr}")
+
+        # N1-3: brak sidecara dla requirements/architecture → status unavailable, reason not_run
+        (review_dir / "requirements.json").unlink()
+        r = run(["gate", "request", "--change", "CHG-12", "--phase", "requirements"], repo, **genv)
+        pl = json.loads(Catch.got[-1]["body"]).get("payload", {})
+        check(pl.get("second_review", {}).get("status") == "unavailable"
+              and pl.get("second_review", {}).get("reason") == "not_run",
+              f"N1-3: brak sidecara → unavailable/not_run: {pl.get('second_review')}")
+
+        # N1-4: faza design nie wymaga drugiego przeglądu — brak pola second_review
+        r = run(["gate", "request", "--change", "CHG-12", "--gate", "design-review", "--summary", "x"], repo, **genv)
+        pl = json.loads(Catch.got[-1]["body"]).get("payload", {})
+        check("second_review" not in pl, f"N1-4: bramka design-review bez pola second_review: {pl}")
+
+        # N1-5: sidecar z status=unavailable → brak pytań z drugiego przeglądu, ale pole second_review przekazane
+        (review_dir / "architecture.json").write_text(json.dumps({
+            "status": "unavailable", "reason": "api_error: timeout", "provider": "openai", "model": "gpt-4o-mini",
+            "same_vendor": False, "cost_usd": 0.0, "findings": [], "run_at": "2026-11-06T10:00:00Z"}),
+            encoding="utf-8")
+        r = run(["gate", "request", "--change", "CHG-12", "--phase", "architecture"], repo, **genv)
+        pl = json.loads(Catch.got[-1]["body"]).get("payload", {})
+        sr = pl.get("second_review", {})
+        check(sr.get("status") == "unavailable" and "timeout" in str(sr.get("reason", ""))
+              and not any("[drugi przegląd]" in q for q in pl.get("questions") or []),
+              f"N1-5: sidecar unavailable → status w evencie, bez pytań z przeglądu: {sr}")
+        (review_dir / "architecture.json").unlink()
+
         srv.shutdown()
 
         # --- F3: faza intent ze zgłoszenia z pdi ---
@@ -326,6 +445,12 @@ def main() -> int:
               "W-9: istniejąca gałąź fazy dostaje gałąź domyślną przed fazą (PRB-13: rozjazd dziennika między gałęziami)")
         check("decision_record.py change new" in body and "--source" in body and "PDI_PROBLEM" in body,
               "W-7: faza intent z pdi zakłada dziennik zmiany ze zgłoszenia i dostaje jego treść (F3)")
+        # N1, DZ12: drugi przegląd w osobnym kroku, tylko dla requirements/architecture, klucz w env tego kroku
+        check("second_review.py artifact" in body
+              and "env.PHASE == 'requirements' || env.PHASE == 'architecture'" in body
+              and "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}" in body
+              and "PDI_SECOND_MODEL:" in body,
+              "W-14: drugi przegląd jako osobny krok z kluczem dostawcy tylko dla tego kroku (Z8g)")
         wf.write_text("moje\n", encoding="utf-8")
         r = run(["workflow", "install"], repo)
         check(r.returncode != 0 and wf.read_text(encoding="utf-8") == "moje\n", "W-5: bez nadpisania")
@@ -347,6 +472,10 @@ def main() -> int:
               and any(c.startswith("name: Błędy skanu") and "verdict.json" in c and "sys.exit(1 if e" in c
                       for c in csteps[scan_i + 1:]),
               "W-16: skan przed checkoutem ci_for_sdlc (bez obcych plików), błąd skanu czerwieni, ustalenia ocenia SEC-001")
+        # Z7b-1b: cele zmiany (TGT-001…004) — opcjonalne pokrycie i mutacje przekazywane do ci_for_sdlc
+        check("COVERAGE_REPORTS: ''" in cbody and "MUTATION_REPORTS: ''" in cbody
+              and '--coverage "$GITHUB_WORKSPACE/$p"' in cbody and '--mutation "$GITHUB_WORKSPACE/$p"' in cbody,
+              f"W-17: change-check przekazuje opcjonalne raporty pokrycia i mutacji do ci_for_sdlc (Z7b-1b): {r.stdout}")
         check("semgrep.dev" in cbody and "TALOS_SEMGREP_CONFIG: ${{ vars.TALOS_SEMGREP_CONFIG }}" in cbody,
               "W-17: szablon mówi o hoście reguł (Z8a) i pozwala podać reguły lokalne")
         r = run(["workflow", "install", "--workflow", "change-check"], repo)

@@ -26,7 +26,7 @@ Dziennik zmiany zgodny z kontraktem pdi 0.3.0 (contract/change.schema.json; od 0
       --id DEC-41 [--by pdi] [--date RRRR-MM-DD] [--why "…"] [--answers PLIK]
       decyzja ze skrzynki pdi (gate.decided, wejścia szablonu sdlc-phase.yml) jako wpis z numerem i wyslano: tak;
       ponowienie z tym samym numerem nic nie dopisuje; --answers: JSON [{question, answer}] — odpowiedzi człowieka na
-      pytania z `## Pytania do bramki` (kontrakt pdi 0.11.0, pole answers), w wpisie jako pary `pytanie`/`odpowiedz`
+      pytania z `## Pytania do bramki` (kontrakt pdi 0.12.0, pole answers), w wpisie jako pary `pytanie`/`odpowiedz`
   python3 .claude/skills/pdi-decisions/scripts/decision_record.py decision import CHG-12 --json PLIK
       decyzje zmiany z rejestru pdi (links.chg; JSON lista {id, statement, why, decided_at, decided_by, kind,
       source_kind, drafted_by, answers?}) jako wpisy z numerem, wyslano: tak i pochodzenie: pdi; decyzja, której numer
@@ -56,7 +56,7 @@ SOURCE_KINDS = ("claude-cli", "claude-ai", "slack", "confluence", "jira", "manua
 ENTRY = ("ref", "id", "wyslano", "kiedy", "kto", "rodzaj", "dlaczego", "zrodlo", "szkic",
          "ustalenie", "skutek",   # odpowiedź na ustalenie ci_for_sdlc
          "pochodzenie")           # pdi — wpis z rejestru pdi (decision import)
-# Para wierszy odpowiedzi na pytanie bramki (kontrakt pdi 0.11.0, answers); w wpisie może być ich kilka.
+# Para wierszy odpowiedzi na pytanie bramki (kontrakt pdi 0.12.0, answers); w wpisie może być ich kilka.
 ANSWER_KEYS = ("pytanie", "odpowiedz")
 ORIGINS = ("pdi",)
 TEXT_MAX = 2000   # jeden wiersz wpisu z danych z pdi
@@ -196,7 +196,7 @@ def answers_lines(answers: list) -> str:
 
 
 def load_answers(path: str) -> list:
-    """Odpowiedzi z pliku JSON [{question, answer}] (pdi, kontrakt 0.11.0) jako pary albo Refused-podobny błąd."""
+    """Odpowiedzi z pliku JSON [{question, answer}] (pdi, kontrakt 0.12.0) jako pary albo Refused-podobny błąd."""
     try:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, ValueError) as e:
@@ -300,7 +300,7 @@ def decision_gate(a) -> int:
 
 
 def import_problems(d, n: int) -> list[str]:
-    """Braki jednej decyzji z pdi do importu (pola z contract/decision.schema.json kontraktu pdi 0.11.0)."""
+    """Braki jednej decyzji z pdi do importu (pola z contract/decision.schema.json kontraktu pdi 0.12.0)."""
     if not isinstance(d, dict):
         return [f"[{n}]: oczekiwany obiekt decyzji"]
     errs = [f"[{n}]: id '{d.get('id')}' — numer z rejestru pdi, np. DEC-41" for _ in [0]
@@ -521,6 +521,10 @@ PLAN_COLUMNS = ("wydanie", "flaga", "rodzaj", "wartość", "wymagania", "odbloko
 FOUNDATION = re.compile(r"^(fundament|foundation|f|f-\d+)$", re.I)   # jak REL-008 w ci_for_sdlc (connectors/repo.ts)
 FOUNDATION_VALUE = re.compile(r"^\((fundament|foundation)\)", re.I)
 REQUIREMENT_ID = re.compile(r"\b[A-Z][A-Z0-9]*-\d+\b")
+# Sekcje architekta w plan.md (N20 i Z7b-1a; kontrakt pdi 0.12.0 — plan.md czyta człowiek, release.yaml maszyna).
+OPTIONS_HEADING = re.compile(r"^##+\s+Rozwa[zż]one opcje\b", re.M)
+OPTION_ENTRY = re.compile(r"^###+\s+Opcja\b", re.M)
+TARGETS_HEADING = re.compile(r"^##+\s+Cele zmiany\b", re.M)
 
 
 def plan_columns(text: str) -> dict:
@@ -543,7 +547,12 @@ def plan_columns(text: str) -> dict:
 
 def check_plan(d: Path) -> list[str]:
     """Samokontrola planu cięć (core-delivery-lifecycle plan-ciec.md), ta sama co REL-008 w ci_for_sdlc: fundament
-    z „Odblokowuje” wskazującym cięcia tej zmiany; cięcie z ID wymagania albo weryfikacją (gdy plan ma „Wymagania”)."""
+    z „Odblokowuje” wskazującym cięcia tej zmiany; cięcie z ID wymagania albo weryfikacją (gdy plan ma „Wymagania”).
+
+    Od kontraktu 0.12.0 (Z7b-1a, DZ6, DZ7, N20) plan w statusie innym niż `draft` musi też mieć sekcję
+    `## Rozważone opcje` z co najmniej dwiema opcjami (`### Opcja ...`) i sekcję `## Cele zmiany` (`targets`).
+    Plan `draft` jest szkicem architekta — jeszcze nie zatwierdzony na B3, więc tych sekcji nie wymagamy.
+    """
     plan = d / "plan.md"
     if not plan.is_file():
         return []
@@ -563,6 +572,19 @@ def check_plan(d: Path) -> list[str]:
                     errs.append(f"plan.md: {t} — „Odblokowuje” {u}, a {u} nie jest cięciem tej zmiany")
         elif "wymagania" in row and not REQUIREMENT_ID.findall(row["wymagania"] or "") and not row.get("weryfikacja"):
             errs.append(f"plan.md: {t} — cięcie bez ID wymagania w „Wymagania” i bez weryfikacji")
+    status = (h.get("status") or "").strip().lower() if isinstance(h.get("status"), str) else ""
+    if status and status != "draft":
+        if not OPTIONS_HEADING.search(text):
+            errs.append("plan.md: brak sekcji „## Rozważone opcje” (N20): architekt wskazuje co najmniej dwie "
+                        "rozważone opcje z plusami, minusami i kosztem, z wyborem i powodem")
+        else:
+            options = OPTION_ENTRY.findall(text)
+            if len(options) < 2:
+                errs.append(f"plan.md: „## Rozważone opcje” ma {len(options)} opcji — N20 wymaga co najmniej dwóch "
+                            "(nagłówki `### Opcja A`, `### Opcja B`); plan z jedną opcją dostaje ustalenie przed B3")
+        if not TARGETS_HEADING.search(text):
+            errs.append("plan.md: brak sekcji „## Cele zmiany (targets)” (Z7b-1a, DZ7): architekt zapisuje "
+                        "pokrycie i mutacje zmienionego kodu (N4), dla produktu AI także progi ewaluacji")
     return errs
 
 
@@ -678,7 +700,7 @@ def main(argv: list[str]) -> int:
     gate.add_argument("--by", default="pdi")
     gate.add_argument("--date")
     gate.add_argument("--why", help="ustalenie i uzasadnienie decyzji z rejestru pdi (trafia do wpisu)")
-    gate.add_argument("--answers", help="plik JSON [{question, answer}] — odpowiedzi na pytania do bramki (pdi 0.11.0)")
+    gate.add_argument("--answers", help="plik JSON [{question, answer}] — odpowiedzi na pytania do bramki (pdi 0.12.0)")
     imp = dec.add_parser("import")
     imp.add_argument("key")
     imp.add_argument("--json", required=True, help="plik JSON z decyzjami zmiany z rejestru pdi (links.chg)")
